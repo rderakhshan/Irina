@@ -27,6 +27,7 @@ jobs:
             tests.test_eval_suite \
             tests.test_eval_harness \
             tests.test_eval_opik_adapter \
+            tests.test_eval_experiments \
             tests.test_run_tracing \
             tests.test_eval_extended
       - name: Core evaluation suite
