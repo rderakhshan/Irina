@@ -39,7 +39,12 @@ vendored EvolveLab/MemEvolve memory system with canonical experience history.
 - [Start here](#start-here)
 - [Quick start](#quick-start)
 - [Command line](#command-line)
+- [Model routing](#model-routing)
+- [Flag-free application profile](#flag-free-application-profile)
+- [Add your own skill](#add-your-own-skill)
 - [Layout](#layout)
+- [Opik local UI and tracing](#opik-local-ui-and-tracing)
+- [Offline governance evaluation lab](#offline-governance-evaluation-lab)
 - [Limits](#limits)
 
 ## Capability map
@@ -56,6 +61,8 @@ vendored EvolveLab/MemEvolve memory system with canonical experience history.
 | CLI | Interactive and headless modes, sessions, memory administration | `harness/orchestration/cli.py` |
 | Fleet | Parallel isolated jobs with ordered results and failure isolation | `harness/orchestration/fleet.py` |
 | Terminal UI | Streaming Markdown, semantic colors, quiet-by-default memory logs | `harness/utils/` |
+| Evaluation | Synthetic governance lab: datasets, oracles, metric math, reports, coverage | `src/back/evaluations/` |
+| Observability | Local Opik traces/spans grouped by pillar under one thread | `harness/observability/` |
 
 ## Memory that learns, not just notes
 
@@ -63,11 +70,12 @@ Most agents "remember" by writing a note. Irina records **what happened**, decid
 whether it actually worked, and recalls the lesson later.
 
 ```text
-before task ──▶ retrieve relevant experience ──▶ bounded lower-trust prompt block
-                                                             │
-task runs ──▶ tool/test evidence ──▶ canonical experience ───┘
-                                                             │
-                                     provider learns ──▶ next task recalls it
+before task --> retrieve relevant experience --> bounded lower-trust prompt block
+                                                          |
+task runs --> tool/test evidence --> canonical experience <+
+                                                          |
+                                  provider learns --> next task recalls it
+
 ```
 
 What that changes in practice:

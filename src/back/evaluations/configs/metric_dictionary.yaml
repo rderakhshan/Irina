@@ -36,7 +36,7 @@ metrics:
     undefined: missing_gold
     severity: high
     owner: llm_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.hallucination_faithfulness
     pillar: llm
@@ -72,7 +72,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: llm_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.claim_citation_coverage
     pillar: llm
@@ -90,7 +90,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: finance_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.citation_resolution_rate
     pillar: llm
@@ -108,7 +108,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: finance_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.claim_support_rate
     pillar: llm
@@ -126,7 +126,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: finance_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.unsupported_material_claim_rate
     pillar: llm
@@ -144,7 +144,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: finance_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.numeric_exact_accuracy
     pillar: llm
@@ -162,7 +162,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: finance_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.refusal_escalation_correctness
     pillar: llm
@@ -180,7 +180,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: policy_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.required_disclosure_presence
     pillar: llm
@@ -432,7 +432,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: policy_eval_owner
-    status: blocked
+    status: implemented
 
   - metric_id: tools.policy_bypass_success_rate
     pillar: tools
@@ -468,7 +468,7 @@ metrics:
     undefined: missing_telemetry
     severity: critical
     owner: security_eval_owner
-    status: blocked
+    status: implemented
 
   - metric_id: tools.retrieval_precision_at_k
     pillar: tools
@@ -486,7 +486,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: retrieval_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.retrieval_recall_at_k
     pillar: tools
@@ -504,7 +504,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: retrieval_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.retrieval_mrr
     pillar: tools
@@ -522,7 +522,7 @@ metrics:
     undefined: empty_denominator
     severity: medium
     owner: retrieval_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.retrieval_ndcg
     pillar: tools
@@ -540,7 +540,7 @@ metrics:
     undefined: empty_denominator
     severity: medium
     owner: retrieval_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.lookahead_violation_count
     pillar: tools
@@ -558,7 +558,7 @@ metrics:
     undefined: missing_telemetry
     severity: critical
     owner: retrieval_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.extraction_field_accuracy
     pillar: environment
@@ -576,7 +576,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: environment_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.index_coverage
     pillar: environment
@@ -612,7 +612,7 @@ metrics:
     undefined: missing_gold
     severity: critical
     owner: environment_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.availability_violation_count
     pillar: environment
@@ -684,7 +684,7 @@ metrics:
     undefined: missing_telemetry
     severity: high
     owner: audit_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.trace_correlation_rate
     pillar: environment
@@ -702,7 +702,7 @@ metrics:
     undefined: missing_telemetry
     severity: high
     owner: audit_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: calibration.judge_precision
     pillar: llm
@@ -829,3 +829,57 @@ metrics:
     severity: high
     owner: environment_eval_owner
     status: planned
+
+  - metric_id: llm.contradicted_claim_rate
+    pillar: llm
+    subpillar: financial_evidence
+    concerns: [trustworthiness]
+    dataset_dependency: C
+    datasets: [DS03, DS14]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: reviewed_claim_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: finance_eval_owner
+    status: implemented
+
+  - metric_id: llm.fairness_pair_disparity
+    pillar: llm
+    subpillar: fairness
+    concerns: [fairness]
+    dataset_dependency: D
+    datasets: [DS10]
+    formula: PAIR
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: matched_pair_design
+    undefined: empty_denominator
+    severity: high
+    owner: fairness_eval_owner
+    status: implemented
+
+  - metric_id: environment.evidence_integrity_version_binding
+    pillar: environment
+    subpillar: audit
+    concerns: [auditing]
+    dataset_dependency: N
+    datasets: [DS15]
+    formula: HASH
+    value_type: bool
+    unit: boolean
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: canonical_hash
+    undefined: missing_telemetry
+    severity: high
+    owner: audit_eval_owner
+    status: implemented
