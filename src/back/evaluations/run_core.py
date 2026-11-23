@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .contracts import IntegrationLevel
@@ -38,18 +39,38 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.opik:
         from ..harness.observability import ensure_opik
-        from .opik_adapter import ensure_dataset, flush, log_trace
+        from .opik_adapter import (
+            create_experiment,
+            dataset_items,
+            ensure_dataset,
+            flush,
+            link_experiment_items,
+            log_feedback_scores,
+            log_trace,
+        )
 
         status = ensure_opik()
         if status.state not in {"reused", "started"}:
             print(f"[opik] {status.detail}; skipping mirror", file=sys.stderr)
         else:
-            ensure_dataset(
-                f"irina-core-{result.dataset_version}",
-                [case.as_dict() for case in cases],
+            dataset_name = f"irina-core-{result.dataset_version}-s{args.seed}"
+            ensure_dataset(dataset_name, [case.as_dict() for case in cases])
+            item_ids = dataset_items(dataset_name)
+            experiment = create_experiment(
+                name=(
+                    f"irina-core-{result.dataset_version}-s{args.seed}-"
+                    f"{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
+                ),
+                dataset_name=dataset_name,
+                config={
+                    "dataset_version": result.dataset_version,
+                    "seed": args.seed,
+                    "integration_level": IntegrationLevel.L1_SIMULATED_WORKFLOW.value,
+                },
             )
+            references: list[tuple[str, str]] = []
             for outcome in result.outcomes:
-                log_trace(
+                trace_id = log_trace(
                     f"eval:{outcome.case_id}",
                     input={"case_id": outcome.case_id, "family_id": outcome.family_id},
                     output={
@@ -59,6 +80,29 @@ def main(argv: list[str] | None = None) -> int:
                     metadata={
                         "integration_level": IntegrationLevel.L1_SIMULATED_WORKFLOW.value
                     },
+                )
+                if trace_id:
+                    scores = [
+                        {
+                            "name": metric.metric_id,
+                            "value": float(metric.value),
+                        }
+                        for metric in outcome.metrics
+                        if metric.defined
+                        and isinstance(metric.value, (int, float, bool))
+                    ]
+                    log_feedback_scores(trace_id, scores)
+                    item_id = item_ids.get(outcome.case_id)
+                    if item_id:
+                        references.append((item_id, trace_id))
+            linked = link_experiment_items(experiment, references)
+            if experiment is None:
+                print("[opik] experiment creation blocked", file=sys.stderr)
+            else:
+                print(
+                    f"[opik] experiment={getattr(experiment, 'id', '')} "
+                    f"items={linked}",
+                    file=sys.stderr,
                 )
             flush()
 

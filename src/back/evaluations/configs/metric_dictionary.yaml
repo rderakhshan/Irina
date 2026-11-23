@@ -234,7 +234,7 @@ metrics:
     undefined: empty_denominator
     severity: medium
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.retrieval_recall_at_k
     pillar: memory
@@ -252,7 +252,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.retrieval_mrr
     pillar: memory
@@ -270,7 +270,7 @@ metrics:
     undefined: empty_denominator
     severity: medium
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.retrieval_ndcg
     pillar: memory
@@ -288,7 +288,7 @@ metrics:
     undefined: empty_denominator
     severity: medium
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.write_accuracy
     pillar: memory
@@ -306,7 +306,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.preservation_recall
     pillar: memory
@@ -324,7 +324,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.compaction_ratio
     pillar: memory
@@ -342,7 +342,7 @@ metrics:
     undefined: empty_denominator
     severity: low
     owner: memory_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.tool_selection_accuracy
     pillar: tools
@@ -360,7 +360,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: tools_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.parameter_correctness
     pillar: tools
@@ -378,7 +378,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: tools_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.trajectory_validity
     pillar: tools
@@ -396,7 +396,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: tools_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.tool_schema_validity
     pillar: tools
@@ -414,7 +414,7 @@ metrics:
     undefined: missing_telemetry
     severity: high
     owner: tools_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: tools.approval_compliance_rate
     pillar: tools
@@ -720,7 +720,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: calibration_owner
-    status: planned
+    status: implemented
 
   - metric_id: calibration.judge_recall
     pillar: llm
@@ -738,7 +738,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: calibration_owner
-    status: planned
+    status: implemented
 
   - metric_id: calibration.judge_fnr
     pillar: llm
@@ -756,7 +756,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: calibration_owner
-    status: planned
+    status: implemented
 
   - metric_id: calibration.agreement_rate
     pillar: llm
@@ -774,7 +774,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: calibration_owner
-    status: planned
+    status: implemented
 
   - metric_id: llm.bias_judge
     pillar: llm

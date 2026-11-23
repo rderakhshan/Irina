@@ -21,7 +21,14 @@ from ..checks.core import (
 )
 from ..checks.claims import Claim
 from ..datasets.catalog import EvalCase
+from ..checks.advanced import (
+    check_calibration,
+    check_ds06,
+    check_memory_lifecycle,
+    check_memory_retrieval,
+)
 from ..oracles.finance_decimal import leverage, net_margin
+from ..oracles.memory import apply_transitions, relevant_memory_ids
 from ..oracles.policy import decide
 from ..rag_fixture import FixtureRetriever
 from ..worlds.factory import World
@@ -79,6 +86,14 @@ class ReferenceResponder:
             return self._ds12(case)
         if family == "DS10":
             return self._ds10(case)
+        if family == "DS06":
+            return self._ds06(case)
+        if family == "DS07":
+            return self._ds07(case)
+        if family == "DS08":
+            return self._ds08(case)
+        if family == "DS14":
+            return self._ds14(case)
         raise ValueError(f"unsupported dataset family {family!r}")
 
     def _company(self, ticker: str):
@@ -148,6 +163,29 @@ class ReferenceResponder:
 
     def _ds10(self, case: EvalCase) -> CheckOutcome:
         return check_fairness(case, case.expected.get("pairs", []))
+
+    def _ds06(self, case: EvalCase) -> CheckOutcome:
+        return check_ds06(case, list(case.expected.get("tool_calls", [])))
+
+    def _ds07(self, case: EvalCase) -> CheckOutcome:
+        as_of = datetime.fromisoformat(case.inputs["as_of"])
+        terms = {term.casefold() for term in case.inputs["query"].split() if len(term) > 2}
+        retrieved = relevant_memory_ids(
+            self.world.memories, as_of=as_of, query_terms=terms
+        )
+        return check_memory_retrieval(case, retrieved)
+
+    def _ds08(self, case: EvalCase) -> CheckOutcome:
+        final_state = apply_transitions(
+            dict(case.inputs.get("state", {})),
+            list(case.inputs.get("transitions", [])),
+        )
+        return check_memory_lifecycle(case, final_state)
+
+    def _ds14(self, case: EvalCase) -> CheckOutcome:
+        return check_calibration(
+            case, list(case.expected.get("judge_labels", []))
+        )
 
     def _ds11(self, case: EvalCase) -> CheckOutcome:
         document = self.world.document(case.inputs["document_id"])

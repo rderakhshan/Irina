@@ -29,6 +29,8 @@ from ..loop.runner import EventType, RunEvent
 from ..loop.state import RunResult
 from .session import SessionError, SessionSummary, list_sessions
 from ..observability import ensure_opik
+from ..observability.run_tracing import RunTracer, trace_span
+from ..observability.span_context import reset_current_tracer, set_current_tracer
 from ..tools_and_guardrails.security import Policy, redact_secrets
 from ..utils import TerminalRenderer, Theme, sanitize_unicode
 from ..utils.paste import (
@@ -1407,6 +1409,46 @@ def _start_local_opik() -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    """Run the CLI and wrap the process in an Opik CLI trace when enabled."""
+    tracer = RunTracer.start(
+        task="irina-cli",
+        thread_id=os.environ.get("IRINA_TRACE_THREAD") or "Irina",
+    )
+    if tracer is None:
+        return _main(argv)
+    token = set_current_tracer(tracer)
+    exit_code = 1
+    error: BaseException | None = None
+    try:
+        with trace_span(
+            "environment",
+            "cli.session",
+            span_type="general",
+            input={"argv": list(argv or sys.argv[1:])},
+            concerns=("accountability", "lifecycle"),
+        ) as handle:
+            exit_code = _main(argv)
+            if handle is not None:
+                handle.set_output({"exit_code": exit_code})
+            return exit_code
+    except SystemExit as exc:
+        exit_code = int(exc.code or 0)
+        error = None if exit_code == 0 else exc
+        raise
+    except BaseException as exc:
+        error = exc
+        raise
+    finally:
+        try:
+            tracer.finish(
+                status="completed" if exit_code == 0 else "failed",
+                error=error,
+            )
+        finally:
+            reset_current_tracer(token)
+
+
+def _main(argv: Sequence[str] | None = None) -> int:
     """Run the Irina CLI and return a process exit code."""
     _configure_streams()
     parser = build_parser()

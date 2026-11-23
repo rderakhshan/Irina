@@ -1,0 +1,37 @@
+name: evaluation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  offline-evaluation:
+    runs-on: ubuntu-latest
+    env:
+      IRINA_MEMORY_ENABLED: "0"
+      IRINA_OPIK_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install minimal test dependency
+        run: python -m pip install --upgrade pip pyyaml
+      - name: Unit tests
+        run: |
+          python -m unittest \
+            tests.test_eval_metrics \
+            tests.test_eval_world \
+            tests.test_eval_rag \
+            tests.test_eval_suite \
+            tests.test_eval_harness \
+            tests.test_eval_opik_adapter \
+            tests.test_run_tracing
+      - name: Core evaluation suite
+        run: python -m src.back.evaluations.run_core --seed 7 --out reports/core
+      - name: Upload evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-evidence
+          path: reports/core

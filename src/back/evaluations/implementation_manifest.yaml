@@ -1,82 +1,94 @@
-# Evaluation lab — checkpoint manifest
-# Update this file atomically after each verified slice.
+# Evaluation lab - checkpoint manifest
 schema_version: 1
-branch: feature/irina-governance-v9
-base_sha: 0a5e57a
+branch: main
+base_sha: 22bff32
 owner: evaluation_lab
 
 checkpoints:
   C0_baseline:
-    status: in_progress
+    status: verified
     tests: "python -m unittest tests.test_harness tests.test_cli"
-    rollback: "delete src/back/evaluations and tests/test_eval_*; branch remains"
   C1a_metrics:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/metrics/
-      - src/back/evaluations/configs/metric_dictionary.yaml
+    status: verified
+    artifacts: [src/back/evaluations/metrics, src/back/evaluations/configs/metric_dictionary.yaml]
     tests: "python -m unittest tests.test_eval_metrics"
-    rollback: "revert this slice; dictionary is additive"
   C1b_contracts:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/contracts/
-    tests: "python -m unittest tests.test_eval_metrics"
-    rollback: "revert this slice"
+    status: verified
+    artifacts: [src/back/evaluations/contracts]
   C1c_world_oracles:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/worlds/
-      - src/back/evaluations/oracles/
+    status: verified
+    artifacts: [src/back/evaluations/worlds, src/back/evaluations/oracles]
     tests: "python -m unittest tests.test_eval_world"
-    rollback: "revert this slice; worlds are regenerated from seeds"
   C1d_core_datasets:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/datasets/
+    status: verified
+    artifacts: [src/back/evaluations/datasets]
     tests: "python -m unittest tests.test_eval_suite"
-    rollback: "revert dataset catalog; no frozen artifacts written"
   C1e_rag_fixture:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/rag_fixture/
+    status: verified
+    artifacts: [src/back/evaluations/rag_fixture]
     tests: "python -m unittest tests.test_eval_rag"
-    rollback: "delete rag_fixture/; nothing else imports it except reference runner"
   C2a_core_suite:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/checks/
-      - src/back/evaluations/runners/reference.py
-      - src/back/evaluations/reporting/
-      - src/back/evaluations/governance/
+    status: verified
+    artifacts: [checks, runners/reference.py, reporting, governance]
     tests: "python -m unittest tests.test_eval_suite"
-    rollback: "revert this slice; reports are disposable"
   C2b_l2_harness:
-    status: tests_passed
-    artifacts:
-      - src/back/evaluations/runners/harness_runner.py
+    status: verified
+    artifacts: [runners/harness_runner.py]
     tests: "python -m unittest tests.test_eval_harness"
-    rollback: "revert this slice"
+  C2c_opik_traces:
+    status: verified
+    artifacts: [opik_adapter]
+    tests: "python -m unittest tests.test_eval_opik_adapter"
+  C3a_tools:
+    status: verified
+    artifacts: [datasets/catalog.py, checks/advanced.py]
+    tests: "python -m unittest tests.test_eval_suite"
+  C3b_memory:
+    status: verified
+    artifacts: [datasets/catalog.py, checks/advanced.py]
+    tests: "python -m unittest tests.test_eval_suite"
+  C3c_calibration_metrics:
+    status: verified
+    artifacts: [datasets/catalog.py, checks/advanced.py]
+    tests: "python -m unittest tests.test_eval_suite"
+  C3d_experiments_feedback:
+    status: verified
+    artifacts: [opik_adapter/client.py, run_core.py]
+    tests: "python -m unittest tests.test_eval_experiments"
+    evidence: "local Opik experiment with 28 items and feedback scores"
+  C3e_ci:
+    status: verified
+    artifacts: [.github/workflows/evaluation.yml]
+  C3f_cli_retry_spans:
+    status: verified
+    artifacts:
+      - src/back/harness/orchestration/cli.py
+      - src/back/harness/providers/deepseek.py
+    tests: "python -m unittest tests.test_run_tracing tests.test_deepseek"
 
 blocked:
-  - id: approvals
-    reason: Irina has no approval workflow or identity model
+  - id: human_calibration
+    reason: DS14 currently uses synthetic labels; no human-adjudicated set
   - id: production_gate
-    reason: Policy is application-level only; no independent runtime gate
+    reason: Policy is application-level; no independent fail-closed runtime gate
+  - id: approvals_identity
+    reason: No approval workflow or identity model
   - id: production_rag
-    reason: No ingestion/index pipeline; fixture-only
-  - id: calibration
-    reason: No human-adjudicated DS14 labels yet
-  - id: deep_eval
-    reason: Package not installed or verified
+    reason: Fixture-only retrieval; no ingestion/index pipeline
+  - id: retention_tenancy
+    reason: No centralized retention/erasure or tenancy
   - id: online_eval
-    reason: Self-hosted Opik feature availability unverified
+    reason: Self-hosted Opik online evaluation/guardrails/RBAC unverified
+  - id: deep_eval
+    reason: Package not installed/verified
+  - id: benchmarks
+    reason: No pinned local benchmark cache or license verification
 
 next_tasks:
-  - DS03 claim cases and claim checks
-  - DS06 tool trajectory cases
-  - DS07/DS08 memory cases
-  - DS09 injection cases
-  - DS13 fault cases
-  - DS14 human calibration
-  - Opik dataset/experiment verification
+  - DS09 injection/privacy suite
+  - DS13 resilience suite
+  - DS15 full telemetry suite
+  - DS14 human calibration and judge agreement report
+  - DS16 optional benchmark lane
+  - OpenTelemetry export (deferred)
+  - real policy gate/approval identity/retention/RAG (external scope)

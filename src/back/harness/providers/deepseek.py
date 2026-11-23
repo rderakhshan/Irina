@@ -39,6 +39,7 @@ from .base import (
     TokenUsage,
     ToolCall,
 )
+from ..observability.span_context import current_tracer
 
 API_ROOT = "https://api.deepseek.com"
 DEFAULT_MODEL = "deepseek-v4-pro"
@@ -155,6 +156,20 @@ def urlopen(request: urllib.request.Request, timeout: float) -> Any:
     return urllib.request.urlopen(request, timeout=timeout)
 
 
+def _attempt_span(attempt: int, url: str) -> Any:
+    tracer = current_tracer()
+    if tracer is None:
+        return None
+    return tracer.start_span(
+        "llm",
+        f"llm.retry.{attempt + 1}",
+        span_type="llm",
+        input={"url": url},
+        metadata={"attempt": attempt + 1},
+        concerns=("trustworthiness", "safety"),
+    )
+
+
 def _post(
     url: str,
     body: dict[str, Any],
@@ -193,6 +208,7 @@ def _post(
     last_description = "no response"
 
     for attempt in range(attempts):
+        attempt_handle = _attempt_span(attempt, url)
         request = urllib.request.Request(
             url,
             data=encoded,
@@ -202,12 +218,19 @@ def _post(
         try:
             with urlopen(request, timeout=timeout) as response:
                 raw = response.read()
-            return _decode_json(raw)
+            decoded = _decode_json(raw)
+            if attempt_handle is not None:
+                attempt_handle.set_output({"status": "ok"})
+                attempt_handle.end()
+            return decoded
         except urllib.error.HTTPError as exc:
             status = int(exc.code)
             description = _http_error_description(exc)
             last_status = status
             last_description = description
+            if attempt_handle is not None:
+                attempt_handle.set_output({"status": status, "error": description})
+                attempt_handle.end()
             if status in RETRYABLE_STATUS_CODES:
                 if attempt < retry_budget:
                     retry_after = _header_value(exc.headers, "Retry-After")
@@ -222,6 +245,9 @@ def _post(
             description = _truncate(f"{type(reason).__name__}: {reason}")
             last_status = None
             last_description = description
+            if attempt_handle is not None:
+                attempt_handle.set_output({"error": description})
+                attempt_handle.end()
             if attempt < retry_budget:
                 time.sleep(_retry_delay(attempt, None))
                 continue

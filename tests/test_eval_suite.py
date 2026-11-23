@@ -24,7 +24,20 @@ class CoreSuiteTests(unittest.TestCase):
     def test_all_core_families_present(self) -> None:
         self.assertEqual(
             set(self.grouped),
-            {"DS01", "DS02", "DS03", "DS04", "DS05", "DS10", "DS11", "DS12"},
+            {
+                "DS01",
+                "DS02",
+                "DS03",
+                "DS04",
+                "DS05",
+                "DS06",
+                "DS07",
+                "DS08",
+                "DS10",
+                "DS11",
+                "DS12",
+                "DS14",
+            },
         )
 
     def test_every_case_has_metrics(self) -> None:

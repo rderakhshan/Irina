@@ -1035,12 +1035,21 @@ class Harness:
     def _execute(self, task: str, *, allow_completed: bool) -> RunResult:
         """Wrap one execution in an Opik run tracer when tracing is enabled."""
         session_id = self._session_path.stem if self._session_path else ""
-        thread_id = os.environ.get("IRINA_TRACE_THREAD") or session_id or "Irina"
+        parent_tracer = current_tracer()
+        thread_id = (
+            os.environ.get("IRINA_TRACE_THREAD")
+            or (parent_tracer.thread_id if parent_tracer is not None else "")
+            or session_id
+            or "Irina"
+        )
         tracer = RunTracer.start(
             task=task if isinstance(task, str) else "",
             session_id=session_id,
             thread_id=thread_id,
-            parent_run_id=self._parent_run_id,
+            parent_run_id=(
+                self._parent_run_id
+                or (parent_tracer.run_id if parent_tracer is not None else None)
+            ),
         )
         if tracer is None:
             return self._execute_inner(task, allow_completed=allow_completed)

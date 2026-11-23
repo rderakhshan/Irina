@@ -412,6 +412,91 @@ def _core_cases(world: World) -> list[EvalCase]:
                 expected_behavior="consistent_treatment_of_matched_pairs",
                 oracle_type="matched_pair_design",
             ),
+            EvalCase(
+                case_id="ds06-read-file",
+                family_id="DS06",
+                pillar="tools",
+                subpillar="trajectory",
+                concerns=("accountability", "trustworthiness"),
+                severity="high",
+                world_id=world.world_id,
+                dataset_version=DATASET_VERSION,
+                seed=world.seed,
+                inputs={"task": "Read README.md and summarize it"},
+                expected={
+                    "tool_calls": [
+                        {"name": "read_file", "args": {"path": "README.md"}}
+                    ],
+                    "acceptable_tools": ["read_file"],
+                },
+                expected_behavior="select_correct_tool_and_args",
+                oracle_type="task_to_tool_graph",
+            ),
+            EvalCase(
+                case_id="ds07-AAA-memory-retrieval",
+                family_id="DS07",
+                pillar="memory",
+                subpillar="retrieval",
+                concerns=("trustworthiness", "explainability"),
+                severity="high",
+                world_id=world.world_id,
+                dataset_version=DATASET_VERSION,
+                seed=world.seed,
+                inputs={
+                    "query": "AAA total debt",
+                    "as_of": world.as_of.isoformat(),
+                    "k": 5,
+                },
+                expected={
+                    "relevant_memory_ids": ["mem-AAA-debt"],
+                },
+                expected_behavior="retrieve_relevant_memory",
+                oracle_type="relevant_memory_ids",
+            ),
+            EvalCase(
+                case_id="ds08-memory-lifecycle",
+                family_id="DS08",
+                pillar="memory",
+                subpillar="write_update",
+                concerns=("trustworthiness", "accountability"),
+                severity="high",
+                world_id=world.world_id,
+                dataset_version=DATASET_VERSION,
+                seed=world.seed,
+                inputs={
+                    "state": {"m1": "old"},
+                    "transitions": [
+                        {"op": "update", "memory_id": "m1", "text": "new"},
+                        {"op": "write", "memory_id": "m2", "text": "keep"},
+                    ],
+                },
+                expected={
+                    "state": {"m1": "new", "m2": "keep"},
+                    "required_facts": ["new", "keep"],
+                    "tokens_before": 100,
+                    "tokens_after": 25,
+                },
+                expected_behavior="apply_state_transitions",
+                oracle_type="memory_state_reducer",
+            ),
+            EvalCase(
+                case_id="ds14-calibration",
+                family_id="DS14",
+                pillar="llm",
+                subpillar="calibration",
+                concerns=("auditing", "trustworthiness"),
+                severity="critical",
+                world_id=world.world_id,
+                dataset_version=DATASET_VERSION,
+                seed=world.seed,
+                inputs={"check": "refusal"},
+                expected={
+                    "human_labels": [True, True, False, False],
+                    "judge_labels": [True, True, False, False],
+                },
+                expected_behavior="judge_agrees_with_human_labels",
+                oracle_type="human_adjudication",
+            ),
         ]
     )
     return cases
@@ -434,3 +519,4 @@ __all__ = [
     "build_core_datasets",
     "flatten_datasets",
 ]
+
