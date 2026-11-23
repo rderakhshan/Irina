@@ -82,9 +82,9 @@ if __name__ == "__main__":
 
 class DashboardConfigTests(unittest.TestCase):
     def test_dashboard_uses_supported_widgets_without_ollie(self) -> None:
-        from src.back.evaluations.opik_adapter.dashboards import build_sections
+        from src.back.evaluations.opik_adapter.dashboards import build_governance_sections
 
-        sections = build_sections()
+        sections = build_governance_sections()
         widgets = [widget for section in sections for widget in section["widgets"]]
         types = {widget["type"] for widget in widgets}
         self.assertIn("experiments_feedback_scores", types)

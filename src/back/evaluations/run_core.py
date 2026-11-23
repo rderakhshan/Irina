@@ -189,13 +189,20 @@ def main(argv: list[str] | None = None) -> int:
                 },
             )
             if summary_trace:
+                composite_scores = [
+                    {"name": item.id, "value": float(item.value)}
+                    for item in composites
+                    if item.value is not None
+                ]
+                gate_scores = [
+                    {
+                        "name": f"gate.{item.id}",
+                        "value": 1.0 if item.gate_triggered else 0.0,
+                    }
+                    for item in composites
+                ]
                 log_feedback_scores(
-                    summary_trace,
-                    [
-                        {"name": item.id, "value": float(item.value)}
-                        for item in composites
-                        if item.value is not None
-                    ],
+                    summary_trace, composite_scores + gate_scores
                 )
                 summary_item_id = item_ids.get("run-summary")
                 if summary_item_id:
@@ -211,16 +218,18 @@ def main(argv: list[str] | None = None) -> int:
                 )
             flush()
             if args.dashboard:
-                from .opik_adapter.dashboards import ensure_dashboard
+                from .opik_adapter.dashboards import ensure_dashboards
 
-                dashboard = ensure_dashboard()
-                if dashboard is None:
+                dashboards = ensure_dashboards(recreate=True)
+                if not dashboards:
                     print("[opik] dashboard creation blocked", file=sys.stderr)
                 else:
-                    print(
-                        f"[opik] dashboard={getattr(dashboard, 'id', '')}",
-                        file=sys.stderr,
-                    )
+                    for dashboard in dashboards:
+                        print(
+                            f"[opik] dashboard={getattr(dashboard, 'id', '')} "
+                            f"name={getattr(dashboard, 'name', '')}",
+                            file=sys.stderr,
+                        )
 
     print(
         json.dumps(

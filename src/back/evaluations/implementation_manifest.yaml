@@ -94,7 +94,7 @@ checkpoints:
       - src/back/evaluations/metrics/composites.py
       - src/back/evaluations/opik_adapter/dashboards.py
       - src/back/evaluations/run_dashboards.py
-    evidence: "Irina Governance dashboard created with 7 sections, no Ollie"
+    evidence: "Irina Governance (10 sections) and Irina Runtime (5 sections) dashboards created; no Ollie"
 
 blocked:
   - id: human_calibration

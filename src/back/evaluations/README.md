@@ -612,16 +612,27 @@ uv run python -m src.back.evaluations.run_dashboards
 uv run python -m src.back.evaluations.run_dashboards --recreate
 ```
 
-The dashboard `Irina Governance` uses only supported widgets:
+The code-defined dashboards use only supported widgets, **no Ollie**:
 
-- `text_markdown` for scope, limits, and gate policy;
-- `experiments_feedback_scores` radar/bar charts for LLM, Memory, Tools,
-  Environment, and Calibration composites;
-- `experiment_leaderboard` ranked by a selected composite.
+**`Irina Governance`** (experiments dashboard, 10 sections, 15 widgets):
+- Overview markdown (scope, limits, gate policy);
+- **line trend** of all composite indices across experiments;
+- **bar + radar** views for LLM, Memory, Tools, Environment, Calibration;
+- **Failure anatomy** bar charts for unsupported/contradicted claims,
+  injection success, unauthorized execution, timeout rate, safe degradation;
+- **Triggered gates** bar chart (`gate.<composite>`, 1 = triggered);
+- retrieval-quality bar chart (memory vs tools P@k/R@k/MRR/NDCG);
+- experiment leaderboard ranked by `llm.grounding_index`.
 
-No `ollie_chart` widget is used. A summary dataset item (`run-summary`) carries
-the composite feedback scores so they appear in experiment charts; per-case
-traces keep the underlying metrics for drill-down.
+**`Irina Runtime`** (project dashboard, 5 sections, 18 widgets):
+- health cards for trace count, errors, p50/p99 latency, cost;
+- trace volume/duration/cost/tokens/error-rate line and bar charts;
+- breakdowns by model and provider;
+- span volume/duration/errors/tokens.
+
+A summary dataset item (`run-summary`) carries composite and gate feedback
+scores so they appear in experiment charts; per-case traces keep the underlying
+metrics for drill-down.
 
 ---
 
