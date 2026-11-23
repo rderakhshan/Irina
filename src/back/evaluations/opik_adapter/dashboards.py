@@ -103,8 +103,17 @@ def _section(section_id: str, title: str, widgets: list[tuple[dict[str, Any], di
     }
 
 
+def _inject_project_id(sections: list[dict[str, Any]], project_id: str) -> None:
+    if not project_id:
+        return
+    for section in sections:
+        for widget in section.get("widgets", []):
+            if widget.get("type") in {"project_metrics", "project_stats_card"}:
+                widget.setdefault("config", {})["projectId"] = project_id
+
+
 def build_governance_sections() -> list[dict[str, Any]]:
-    sections = [
+    return [
         _section(
             "section-overview",
             "Overview",
@@ -293,10 +302,9 @@ def build_governance_sections() -> list[dict[str, Any]]:
             ],
         ),
     ]
-    return sections
 
 
-def build_runtime_sections() -> list[dict[str, Any]]:
+def build_runtime_sections(project_id: str = "") -> list[dict[str, Any]]:
     def metric_widget(
         widget_id: str,
         title: str,
@@ -310,6 +318,8 @@ def build_runtime_sections() -> list[dict[str, Any]]:
             "traceFilters": [],
             **extra,
         }
+        if project_id:
+            config["projectId"] = project_id
         return (
             _widget(widget_id, title, "project_metrics", config),
             _layout(widget_id, 0, 0, 2, 4),
@@ -320,22 +330,18 @@ def build_runtime_sections() -> list[dict[str, Any]]:
         title: str,
         metric: str,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
+        config = {
+            "source": "traces",
+            "projectId": project_id,
+            "metric": metric,
+            "traceFilters": [],
+        }
         return (
-            _widget(
-                widget_id,
-                title,
-                "project_stats_card",
-                {
-                    "source": "traces",
-                    "projectId": "",
-                    "metric": metric,
-                    "traceFilters": [],
-                },
-            ),
+            _widget(widget_id, title, "project_stats_card", config),
             _layout(widget_id, 0, 0, 1, 2),
         )
 
-    return [
+    sections = [
         _section(
             "runtime-overview",
             "Overview",
@@ -433,6 +439,18 @@ def build_runtime_sections() -> list[dict[str, Any]]:
             ],
         ),
     ]
+    return sections
+
+
+def _project_id(client: Any, name: str) -> str:
+    try:
+        result = client.rest_client.projects.find_projects(size=100)
+        for project in result.content:
+            if project.name == name:
+                return str(project.id)
+    except Exception:
+        pass
+    return ""
 
 
 def _ensure_one(
@@ -472,7 +490,8 @@ def ensure_dashboards(*, recreate: bool = False) -> list[Any]:
     client = _get_client()
     if client is None:
         return []
-    project = os.environ.get("OPIK_PROJECT_NAME", "Irina")
+    project_name = os.environ.get("OPIK_PROJECT_NAME", "Irina")
+    project_id = _project_id(client, project_name)
     results = [
         _ensure_one(
             client,
@@ -480,7 +499,7 @@ def ensure_dashboards(*, recreate: bool = False) -> list[Any]:
             dashboard_type="experiments",
             description="Irina governance composites, failure anatomy, and ranking.",
             sections=build_governance_sections(),
-            project_name=project,
+            project_name=project_name,
             recreate=recreate,
         ),
         _ensure_one(
@@ -488,8 +507,8 @@ def ensure_dashboards(*, recreate: bool = False) -> list[Any]:
             name=RUNTIME_NAME,
             dashboard_type="multi_project",
             description="Irina runtime volume, latency, errors, tokens, cost, and breakdowns.",
-            sections=build_runtime_sections(),
-            project_name=project,
+            sections=build_runtime_sections(project_id),
+            project_name=project_name,
             recreate=recreate,
         ),
     ]
@@ -500,16 +519,21 @@ def ensure_dashboard(*, name: str = GOVERNANCE_NAME, project_name: str | None = 
     client = _get_client()
     if client is None:
         return None
-    project = project_name or os.environ.get("OPIK_PROJECT_NAME", "Irina")
-    sections = build_governance_sections() if name == GOVERNANCE_NAME else build_runtime_sections()
-    dashboard_type = "experiments" if name == GOVERNANCE_NAME else "multi_project"
+    project_name = project_name or os.environ.get("OPIK_PROJECT_NAME", "Irina")
+    project_id = _project_id(client, project_name)
+    if name == GOVERNANCE_NAME:
+        sections = build_governance_sections()
+        dashboard_type = "experiments"
+    else:
+        sections = build_runtime_sections(project_id)
+        dashboard_type = "multi_project"
     return _ensure_one(
         client,
         name=name,
         dashboard_type=dashboard_type,
-        description="Irina governance dashboard",
+        description="Irina dashboard",
         sections=sections,
-        project_name=project,
+        project_name=project_name,
         recreate=recreate,
     )
 
