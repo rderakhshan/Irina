@@ -1,0 +1,853 @@
+"""Day 2: NVIDIA OpenShell sandbox adapter.
+
+Concept: this module is the only place that talks to OpenShell. It starts or
+attaches to a sandbox, uploads the workspace worker, runs commands and file
+operations inside the sandbox, and removes the sandbox when the task ends.
+
+Design constraints:
+* Only documented OpenShell 0.1.5 CLI commands are used.
+* Commands and worker requests are passed as argument lists and bytes over
+  stdin. No host shell is used.
+* Windows launches the WSL-installed ``openshell`` CLI through ``wsl.exe``.
+* The host model key is never passed into the sandbox. No provider is attached.
+* File paths are resolved by the sandbox worker, not by the host.
+"""
+
+from __future__ import annotations
+
+import base64
+import json
+import os
+import shlex
+import posixpath
+import subprocess
+import time
+import uuid
+from dataclasses import dataclass
+from functools import wraps
+from pathlib import Path
+from typing import Any
+
+from ..observability.run_tracing import trace_span
+
+
+def _traced(name: str):
+    """Record one sandbox operation as an environment span."""
+
+    def decorator(method):
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            payload = {"args": [str(item)[:500] for item in args]}
+            payload.update({key: str(value)[:500] for key, value in kwargs.items()})
+            with trace_span(
+                "environment",
+                f"sandbox.{name}",
+                span_type="general",
+                input=payload,
+                concerns=("security_resilience", "accountability"),
+            ) as handle:
+                try:
+                    result = method(self, *args, **kwargs)
+                except Exception as exc:
+                    if handle is not None:
+                        handle.set_output({"error": f"{type(exc).__name__}: {exc}"})
+                    raise
+                if handle is not None:
+                    if isinstance(result, dict):
+                        handle.set_output({"result": result})
+                    elif isinstance(result, (str, int, float, bool)) or result is None:
+                        handle.set_output({"result": result})
+                    else:
+                        handle.set_output({"result": type(result).__name__})
+                return result
+
+        return wrapper
+
+    return decorator
+
+DEFAULT_POLICY_PATH = Path(__file__).with_name("openshell_policy.yaml")
+NETWORK_POLICY_PATH = Path(__file__).with_name("openshell_policy_network.yaml")
+DEFAULT_WORKER_PATH = Path(__file__).with_name("sandbox_worker.py")
+DEFAULT_TOOL_WORKER_PATH = Path(__file__).with_name("tool_worker.py")
+DEFAULT_IMAGE = "python:3.12-slim"
+WORKER_SANDBOX_PATH = "/tmp/irina_worker.py"
+TOOL_WORKER_SANDBOX_PATH = "/tmp/irina_tool_worker.py"
+DEFAULT_CREATE_TIMEOUT = 300
+DEFAULT_FILE_TIMEOUT = 60
+
+
+class SandboxError(RuntimeError):
+    """A sandbox operation failed in a way the caller should report."""
+
+
+class SandboxUnavailable(SandboxError):
+    """OpenShell or its gateway is not available on this machine."""
+
+
+@dataclass
+class SandboxResult:
+    """Result of one command executed inside the sandbox.
+
+    Attributes:
+        exit_code: Remote command exit code, or 124 when the command timed out.
+        stdout: Captured standard output.
+        stderr: Captured standard error.
+        timed_out: Whether the command hit its time limit.
+    """
+
+    exit_code: int
+    stdout: str
+    stderr: str
+    timed_out: bool = False
+
+
+def _decode(data: bytes) -> str:
+    """Decode CLI output as UTF-8 without failing on unusual bytes."""
+    return data.decode("utf-8", "replace")
+
+
+def parse_worker_response(stdout: str) -> dict[str, Any]:
+    """Parse one worker response and raise a useful error on failure.
+
+    Args:
+        stdout: Raw worker standard output.
+
+    Returns:
+        The successful response object.
+
+    Raises:
+        PermissionError, FileNotFoundError, IsADirectoryError,
+        NotADirectoryError, ValueError: Reconstructed from the worker error.
+        SandboxError: If the response is missing or malformed.
+    """
+    try:
+        payload = json.loads(stdout.strip())
+    except json.JSONDecodeError as exc:
+        raise SandboxError(f"invalid worker response: {exc}") from None
+    if not isinstance(payload, dict):
+        raise SandboxError("worker response must be a JSON object")
+    if payload.get("ok"):
+        return payload
+
+    error = payload.get("error")
+    if not isinstance(error, dict):
+        raise SandboxError("worker returned an error without details")
+    error_type = str(error.get("type", "SandboxError"))
+    message = str(error.get("message", ""))
+    if error_type == "PermissionError":
+        raise PermissionError(message)
+    if error_type == "FileNotFoundError":
+        raise FileNotFoundError(message)
+    if error_type == "IsADirectoryError":
+        raise IsADirectoryError(message)
+    if error_type == "NotADirectoryError":
+        raise NotADirectoryError(message)
+    if error_type == "ValueError":
+        raise ValueError(message)
+    raise SandboxError(f"{error_type}: {message}")
+
+
+class OpenShellSandbox:
+    """Lifecycle and execution adapter for one OpenShell sandbox.
+
+    Args:
+        name: Sandbox name. A unique name is generated when omitted.
+        policy_path: OpenShell policy YAML. Defaults to the Day 2 policy file.
+        image: OCI image used for the sandbox. It must contain Python 3.
+        workspace: Workspace under the sandbox working directory. A relative
+            name is created inside the sandbox working directory.
+        timeout: Host-side timeout for sandbox creation in seconds.
+        wsl_distro: Optional WSL distribution name on Windows.
+        gateway: Optional OpenShell gateway name.
+        worker_path: Host path to the sandbox worker script.
+        keep: Stop instead of delete when :meth:`stop` is called.
+    """
+
+    def __init__(
+        self,
+        name: str | None = None,
+        *,
+        policy_path: str | Path | None = None,
+        image: str = DEFAULT_IMAGE,
+        workspace: str | None = None,
+        timeout: int = DEFAULT_CREATE_TIMEOUT,
+        wsl_distro: str | None = None,
+        gateway: str | None = None,
+        worker_path: str | Path | None = None,
+        keep: bool = False,
+    ) -> None:
+        self.name = name or f"irina-{uuid.uuid4().hex[:8]}"
+        self.policy_path = Path(
+            policy_path if policy_path is not None else DEFAULT_POLICY_PATH
+        ).resolve()
+        self.worker_path = Path(
+            worker_path if worker_path is not None else DEFAULT_WORKER_PATH
+        ).resolve()
+        self.image = image
+        self.workspace_name = workspace
+        self.timeout = timeout
+        self.wsl_distro = wsl_distro
+        self.gateway = gateway
+        self.keep = keep
+        self.workspace: str | None = None
+        self.version: str | None = None
+        self.sandbox_info: dict[str, Any] | None = None
+        self._started = False
+
+    @property
+    def started(self) -> bool:
+        """Return whether the adapter currently holds a running sandbox."""
+        return self._started
+
+    @property
+    def platform_name(self) -> str:
+        """Return the platform visible inside the sandbox."""
+        return "Linux"
+
+    @classmethod
+    def is_available(cls) -> bool:
+        """Return whether the CLI and gateway are usable on this machine."""
+        try:
+            cls().check_available()
+        except SandboxUnavailable:
+            return False
+        return True
+
+    def check_available(self) -> str:
+        """Verify the CLI and gateway, returning the CLI version string.
+
+        Raises:
+            SandboxUnavailable: If OpenShell, the gateway, or WSL is missing.
+        """
+        try:
+            version = self._cli(["--version"], timeout=20)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise SandboxUnavailable(
+                "OpenShell CLI is not available. Install OpenShell 0.1.5 in "
+                "WSL 2 and ensure `wsl.exe -e openshell --version` works. "
+                f"Details: {exc}"
+            ) from None
+        if version.returncode != 0:
+            raise SandboxUnavailable(
+                "OpenShell CLI failed: "
+                f"{_decode(version.stderr).strip() or version.returncode}"
+            )
+        version_line = _decode(version.stdout).strip().splitlines()
+        self.version = version_line[0] if version_line else "openshell unknown"
+
+        try:
+            status = self._cli(["status"], timeout=20)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise SandboxUnavailable(
+                f"OpenShell gateway status failed: {exc}"
+            ) from None
+        status_text = _decode(status.stdout)
+        if status.returncode != 0 or "Connected" not in status_text:
+            detail = _decode(status.stderr).strip() or status_text.strip()
+            raise SandboxUnavailable(
+                "OpenShell gateway is not connected. Start it with the "
+                f"OpenShell CLI. Details: {detail[:500]}"
+            )
+        return self.version
+
+    @_traced("start")
+    def start(self) -> "OpenShellSandbox":
+        """Start a new sandbox or attach to the named one when it is ready.
+
+        Returns:
+            This adapter, ready for file and command operations.
+
+        Raises:
+            SandboxUnavailable: If OpenShell is not configured.
+            SandboxError: If the sandbox cannot be started or prepared.
+        """
+        if self._started:
+            return self
+        self.check_available()
+        if not self.policy_path.is_file():
+            raise SandboxError(
+                f"OpenShell policy file not found: {self.policy_path}"
+            )
+        if not self.worker_path.is_file():
+            raise SandboxError(
+                f"sandbox worker not found: {self.worker_path}"
+            )
+
+        existing = self._get_sandbox()
+        created = existing is None
+        if existing is not None:
+            phase = str(existing.get("phase", ""))
+            if phase != "Ready":
+                started = self._cli(
+                    ["sandbox", "start", self.name], timeout=self.timeout
+                )
+                if started.returncode != 0:
+                    raise SandboxError(
+                        f"sandbox {self.name!r} is {phase or 'unknown'} and "
+                        "could not be started: "
+                        f"{_decode(started.stderr).strip()}"
+                    )
+                existing = self._wait_ready()
+            self.sandbox_info = existing
+        else:
+            self.sandbox_info = self._create()
+
+        try:
+            self._setup_workspace()
+        except Exception:
+            if created:
+                try:
+                    self._cli(
+                        ["sandbox", "delete", self.name], timeout=120
+                    )
+                except Exception:
+                    pass
+            raise
+        self._started = True
+        return self
+
+    @classmethod
+    def attach(cls, name: str, **kwargs: Any) -> "OpenShellSandbox":
+        """Attach to an existing ready sandbox by name.
+
+        Args:
+            name: Existing sandbox name.
+            **kwargs: Same options as the constructor.
+
+        Returns:
+            A ready adapter.
+
+        Raises:
+            SandboxError: If the sandbox is missing or not ready.
+        """
+        sandbox = cls(name=name, **kwargs)
+        sandbox.check_available()
+        info = sandbox._get_sandbox()
+        if info is None:
+            raise SandboxError(f"sandbox {name!r} was not found")
+        if str(info.get("phase", "")) != "Ready":
+            raise SandboxError(
+                f"sandbox {name!r} is not ready: {info.get('phase')}"
+            )
+        sandbox.sandbox_info = info
+        sandbox._setup_workspace()
+        sandbox._started = True
+        return sandbox
+
+    @classmethod
+    def reattach(cls, name: str, **kwargs: Any) -> "OpenShellSandbox":
+        """Reattach to an existing sandbox, starting it if stopped.
+
+        Unlike :meth:`start`, this never creates a replacement sandbox when the
+        named sandbox is gone. A missing sandbox means the persistent workspace
+        cannot be restored.
+
+        Args:
+            name: Existing sandbox name.
+            **kwargs: Same options as the constructor.
+
+        Returns:
+            A ready adapter.
+
+        Raises:
+            SandboxError: If the sandbox is missing or cannot be started.
+        """
+        sandbox = cls(name=name, **kwargs)
+        sandbox.check_available()
+        info = sandbox._get_sandbox()
+        if info is None:
+            raise SandboxError(
+                f"sandbox {name!r} no longer exists; its workspace cannot be "
+                "restored by creating a new sandbox"
+            )
+        phase = str(info.get("phase", ""))
+        if phase != "Ready":
+            started = sandbox._cli(
+                ["sandbox", "start", name], timeout=sandbox.timeout
+            )
+            if started.returncode != 0:
+                raise SandboxError(
+                    f"sandbox {name!r} is {phase or 'unknown'} and could not "
+                    "be restarted: "
+                    f"{_decode(started.stderr).strip()}"
+                )
+            info = sandbox._wait_ready()
+        sandbox.sandbox_info = info
+        sandbox._setup_workspace(create=False)
+        sandbox._started = True
+        return sandbox
+
+    @_traced("exec")
+    def exec(
+        self,
+        argv: list[str],
+        *,
+        workdir: str | None = None,
+        timeout: int = 120,
+        input_text: str | None = None,
+    ) -> SandboxResult:
+        """Execute one command inside the sandbox.
+
+        Args:
+            argv: Command and arguments. No host shell is involved.
+            workdir: Working directory inside the sandbox. Defaults to the
+                approved workspace.
+            timeout: Remote timeout in seconds. ``0`` disables it.
+            input_text: Optional text written to the command's stdin.
+
+        Returns:
+            Captured output and exit status.
+        """
+        if not self._started:
+            raise SandboxError("sandbox is not started")
+        if isinstance(argv, str):
+            raise TypeError("argv must be a list of strings")
+        command = [str(part) for part in argv]
+        directory = workdir if workdir is not None else self.workspace
+        return self._exec_cli(
+            command,
+            workdir=directory,
+            timeout=timeout,
+            input_text=input_text,
+        )
+
+    @_traced("read_file")
+    def read_file(self, path: str, *, max_lines: int = 4000) -> dict[str, Any]:
+        """Read a workspace file through the sandbox worker."""
+        return self._file_request(
+            "read_file", path=path, max_lines=max_lines
+        )
+
+    @_traced("write_file")
+    def write_file(self, path: str, content: str) -> dict[str, Any]:
+        """Write a workspace file through the sandbox worker."""
+        return self._file_request(
+            "write_file", path=path, content=content
+        )
+
+    @_traced("upload_file")
+    def upload_file(self, source: str | Path, path: str) -> dict[str, Any]:
+        """Upload one host file into the approved sandbox workspace.
+
+        Uses base64 over the worker stdin instead of the CLI upload path so
+        binary assets and text files are copied byte-for-byte.
+        """
+        if not self._started:
+            raise SandboxError("sandbox is not started")
+        source_path = Path(source).expanduser().resolve()
+        if not source_path.is_file():
+            raise FileNotFoundError(f"upload source is not a file: {source_path}")
+        target = self._workspace_source(path)
+        payload = base64.b64encode(source_path.read_bytes()).decode("ascii")
+        script = (
+            f"mkdir -p {shlex.quote(posixpath.dirname(target))} && "
+            f"base64 -d > {shlex.quote(target)}"
+        )
+        result = self._exec_cli(
+            ["/bin/sh", "-c", script],
+            workdir=None,
+            timeout=300,
+            input_text=payload,
+        )
+        if result.exit_code != 0:
+            raise SandboxError(
+                f"failed to upload {source_path.name!r}: {result.stderr.strip()}"
+            )
+        return {"path": target, "bytes": source_path.stat().st_size}
+
+    def edit_file(self, path: str, old: str, new: str) -> dict[str, Any]:
+        """Edit a workspace file through the sandbox worker."""
+        return self._file_request(
+            "edit_file", path=path, old=old, new=new
+        )
+
+    @_traced("list_files")
+    def list_files(
+        self, pattern: str = "**/*", *, limit: int = 500
+    ) -> dict[str, Any]:
+        """List workspace files through the sandbox worker."""
+        return self._file_request(
+            "list_files", pattern=pattern, limit=limit
+        )
+
+    @_traced("grep")
+    def grep(
+        self, regex: str, pattern: str = "*", *, limit: int = 200
+    ) -> dict[str, Any]:
+        """Search workspace files through the sandbox worker."""
+        return self._file_request(
+            "grep", regex=regex, pattern=pattern, limit=limit
+        )
+
+    @_traced("download")
+    def download(
+        self,
+        sandbox_path: str | Path,
+        destination: str | Path,
+    ) -> Path:
+        """Download one workspace file or directory to the host.
+
+        The source is restricted to the approved sandbox workspace. The host
+        destination is created below its parent if needed. This is used to
+        retrieve build artifacts before an owned sandbox is deleted.
+        """
+        if not self._started:
+            raise SandboxError("sandbox is not started")
+        if not self.workspace:
+            raise SandboxError("sandbox workspace is not initialized")
+        source = self._workspace_source(sandbox_path)
+        target = Path(destination).expanduser().resolve()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        result = self._cli(
+            [
+                "sandbox",
+                "download",
+                self.name,
+                source,
+                self._wsl_path(target),
+            ],
+            timeout=300,
+        )
+        if result.returncode != 0:
+            raise SandboxError(
+                f"failed to download {source!r} from sandbox {self.name!r}: "
+                f"{_decode(result.stderr).strip()}"
+            )
+        return target
+
+    download_file = download
+
+    def _workspace_source(self, path: str | Path) -> str:
+        """Resolve a download source and reject workspace escapes."""
+        assert self.workspace is not None
+        raw = str(path)
+        source = posixpath.normpath(
+            raw
+            if raw.startswith("/")
+            else posixpath.join(self.workspace, raw)
+        )
+        root = posixpath.normpath(self.workspace)
+        if source != root and not source.startswith(root.rstrip("/") + "/"):
+            raise SandboxError(
+                "sandbox path must be inside the approved workspace: "
+                f"{raw!r}"
+            )
+        return source
+
+    def stop(self) -> None:
+        """Delete the sandbox, or stop it when ``keep`` is set.
+
+        Raises:
+            SandboxError: If OpenShell reports a cleanup failure.
+        """
+        if not self._started:
+            return
+        action = "stop" if self.keep else "delete"
+        result = self._cli(
+            ["sandbox", action, self.name], timeout=120
+        )
+        self._started = False
+        self.workspace = None
+        if result.returncode != 0:
+            raise SandboxError(
+                f"failed to {action} sandbox {self.name!r}: "
+                f"{_decode(result.stderr).strip()}"
+            )
+
+    close = stop
+
+    @_traced("delete")
+    def delete(self) -> None:
+        """Delete the sandbox even if startup did not complete.
+
+        Raises:
+            SandboxError: If OpenShell reports a cleanup failure.
+        """
+        result = self._cli(["sandbox", "delete", self.name], timeout=120)
+        self._started = False
+        self.workspace = None
+        if result.returncode != 0:
+            raise SandboxError(
+                f"failed to delete sandbox {self.name!r}: "
+                f"{_decode(result.stderr).strip()}"
+            )
+
+    def __enter__(self) -> "OpenShellSandbox":
+        return self.start()
+
+    def __exit__(self, *exc_info: object) -> bool:
+        self.stop()
+        return False
+
+    def _base_command(self) -> list[str]:
+        """Return the host command prefix for the OpenShell CLI."""
+        if os.name == "nt":
+            command = ["wsl.exe"]
+            if self.wsl_distro:
+                command.extend(["-d", self.wsl_distro])
+            command.append("-e")
+        else:
+            command = []
+        command.append("openshell")
+        if self.gateway:
+            command.extend(["--gateway", self.gateway])
+        command.extend(["--color", "never"])
+        return command
+
+    def _wsl_path(self, path: Path) -> str:
+        """Return a WSL path for a local Windows file."""
+        raw = str(path)
+        if os.name != "nt" or raw.startswith("/"):
+            return raw
+        drive = path.drive
+        if not drive or not drive.endswith(":"):
+            raise SandboxUnavailable(
+                "OpenShell on Windows requires the policy, worker, and files "
+                "on a local drive visible to WSL. "
+                f"Unsupported path: {raw}"
+            )
+        remainder = raw[len(drive) :].replace("\\", "/")
+        return f"/mnt/{drive[0].lower()}{remainder}"
+
+    def _cli(
+        self,
+        args: list[str],
+        *,
+        input_text: str | None = None,
+        timeout: float = 120,
+    ) -> subprocess.CompletedProcess:
+        """Run one OpenShell CLI command without a host shell."""
+        command = self._base_command() + args
+        options: dict[str, Any] = {
+            "capture_output": True,
+            "timeout": timeout,
+        }
+        if input_text is None:
+            options["stdin"] = subprocess.DEVNULL
+        else:
+            options["input"] = input_text.encode("utf-8")
+        return subprocess.run(command, **options)
+
+    def _get_sandbox(self) -> dict[str, Any] | None:
+        """Return sandbox metadata, or ``None`` when it does not exist."""
+        try:
+            result = self._cli(
+                ["sandbox", "get", self.name, "--output", "json"],
+                timeout=30,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        if result.returncode != 0:
+            return None
+        try:
+            payload = json.loads(_decode(result.stdout).strip())
+        except json.JSONDecodeError:
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    def _wait_ready(self, timeout: int = 120) -> dict[str, Any]:
+        """Poll until the sandbox is ready or the wait budget expires."""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            info = self._get_sandbox()
+            if info is not None:
+                phase = str(info.get("phase", ""))
+                if phase == "Ready":
+                    return info
+                if phase in {"Error", "Failed"}:
+                    raise SandboxError(
+                        f"sandbox {self.name!r} entered phase {phase}"
+                    )
+            time.sleep(1)
+        raise SandboxError(
+            f"timed out waiting for sandbox {self.name!r} to become ready"
+        )
+
+    def _create(self) -> dict[str, Any]:
+        """Create a detached sandbox with the Day 2 policy."""
+        policy = self._wsl_path(self.policy_path)
+        keepalive = "while :; do sleep 3600; done"
+        args = [
+            "sandbox",
+            "create",
+            "--name",
+            self.name,
+            "--from",
+            self.image,
+            "--policy",
+            policy,
+            "--detach",
+            "--no-auto-providers",
+            "--label",
+            "irina=day2",
+            "--output",
+            "json",
+            "--",
+            "/bin/sh",
+            "-c",
+            keepalive,
+        ]
+        try:
+            result = self._cli(args, timeout=self.timeout)
+        except subprocess.TimeoutExpired as exc:
+            raise SandboxError(
+                f"timed out creating sandbox {self.name!r}: {exc}"
+            ) from None
+        if result.returncode != 0:
+            raise SandboxError(
+                f"failed to create sandbox {self.name!r}: "
+                f"{_decode(result.stderr).strip()}"
+            )
+        text = _decode(result.stdout).strip()
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise SandboxError(
+                f"unexpected create output: {text[:500]!r} ({exc})"
+            ) from None
+        if not isinstance(payload, dict):
+            raise SandboxError("unexpected create output: expected an object")
+        if str(payload.get("phase", "")) != "Ready":
+            return self._wait_ready()
+        return payload
+
+    def _setup_workspace(self, *, create: bool = True) -> None:
+        """Create or verify the approved workspace and upload the worker."""
+        current = self._exec_cli(
+            ["/bin/pwd"], workdir=None, timeout=60
+        )
+        if current.exit_code != 0:
+            raise SandboxError(
+                "could not read the sandbox working directory: "
+                f"{current.stderr.strip()}"
+            )
+        canonical = current.stdout.strip().splitlines()
+        if not canonical or not canonical[-1].startswith("/"):
+            raise SandboxError(
+                f"unexpected sandbox working directory: {current.stdout!r}"
+            )
+        root = canonical[-1]
+
+        requested = self.workspace_name or root
+        workspace = (
+            requested
+            if requested.startswith("/")
+            else posixpath.join(root, requested)
+        )
+        workspace = posixpath.normpath(workspace)
+        if workspace != root and not workspace.startswith(root.rstrip("/") + "/"):
+            raise SandboxError(
+                "workspace must be inside the sandbox working directory: "
+                f"{workspace!r} is outside {root!r}"
+            )
+
+        if create:
+            made = self._exec_cli(
+                ["/bin/mkdir", "-p", workspace], workdir=None, timeout=60
+            )
+            if made.exit_code != 0:
+                raise SandboxError(
+                    f"could not create sandbox workspace {workspace!r}: "
+                    f"{made.stderr.strip()}"
+                )
+        else:
+            existing = self._exec_cli(
+                ["/bin/test", "-d", workspace], workdir=None, timeout=20
+            )
+            if existing.exit_code != 0:
+                raise SandboxError(
+                    f"sandbox workspace {workspace!r} is missing; the session "
+                    "workspace cannot be restored"
+                )
+
+        uploaded = self._cli(
+            [
+                "sandbox",
+                "upload",
+                self.name,
+                self._wsl_path(self.worker_path),
+                WORKER_SANDBOX_PATH,
+                "--no-git-ignore",
+            ],
+            timeout=120,
+        )
+        if uploaded.returncode != 0:
+            raise SandboxError(
+                "could not upload the sandbox worker: "
+                f"{_decode(uploaded.stderr).strip()}"
+            )
+        tool_worker = self.worker_path.with_name("tool_worker.py")
+        if not tool_worker.is_file():
+            tool_worker = DEFAULT_TOOL_WORKER_PATH
+        tool_upload = self._cli(
+            [
+                "sandbox",
+                "upload",
+                self.name,
+                self._wsl_path(tool_worker),
+                TOOL_WORKER_SANDBOX_PATH,
+                "--no-git-ignore",
+            ],
+            timeout=120,
+        )
+        if tool_upload.returncode != 0:
+            raise SandboxError(
+                "could not upload the sandbox tool worker: "
+                f"{_decode(tool_upload.stderr).strip()}"
+            )
+        self.workspace = workspace
+
+    def _exec_cli(
+        self,
+        argv: list[str],
+        *,
+        workdir: str | None,
+        timeout: int,
+        input_text: str | None = None,
+    ) -> SandboxResult:
+        """Build and run one ``openshell sandbox exec`` request."""
+        args = [
+            "sandbox",
+            "exec",
+            "-n",
+            self.name,
+            "--no-tty",
+            "--no-login-shell",
+        ]
+        if workdir is not None:
+            args.extend(["--workdir", workdir])
+        args.extend(["--timeout", str(int(timeout))])
+        args.extend(["--", *argv])
+        host_timeout = timeout + 15 if timeout > 0 else 3600
+        try:
+            result = self._cli(
+                args, input_text=input_text, timeout=host_timeout
+            )
+        except subprocess.TimeoutExpired:
+            return SandboxResult(124, "", "", True)
+        return SandboxResult(
+            exit_code=result.returncode,
+            stdout=_decode(result.stdout),
+            stderr=_decode(result.stderr),
+            timed_out=result.returncode == 124,
+        )
+
+    def _file_request(self, op: str, **values: Any) -> dict[str, Any]:
+        """Send one operation to the uploaded sandbox worker."""
+        if not self.workspace:
+            raise SandboxError("sandbox workspace is not initialized")
+        request = {"op": op, "workdir": self.workspace, **values}
+        result = self.exec(
+            ["python3", WORKER_SANDBOX_PATH],
+            workdir=self.workspace,
+            timeout=DEFAULT_FILE_TIMEOUT,
+            input_text=json.dumps(request, ensure_ascii=False),
+        )
+        if result.timed_out:
+            raise SandboxError("sandbox file operation timed out")
+        if result.exit_code != 0 and not result.stdout.strip():
+            raise SandboxError(
+                f"sandbox worker failed (exit {result.exit_code}): "
+                f"{result.stderr.strip()}"
+            )
+        return parse_worker_response(result.stdout)

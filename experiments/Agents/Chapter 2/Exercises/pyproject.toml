@@ -1,0 +1,29 @@
+# Chapter 2 Exercises — project definition for uv.
+#
+# The root pyproject.toml declares `dependencies = []` and requires-python
+# >= 3.13, so `uv run` from Exercises/ used to resolve the wrong project and
+# produce an empty env with no `agents` package. This local pyproject gives uv
+# the real dependency list and pins it against the shared Python it should run.
+#
+# `uv run` auto-syncs this into a local <Exercises>/.venv on first use.
+
+[project]
+name = "chapter2-exercises"
+version = "0.1.0"
+description = "Chapter 2 design patterns rebuilt as a growing agent ecosystem"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai-agents>=0.22.1,<0.23",
+    "openai>=3.0.0,<4",
+    "python-dotenv>=1.2.0",
+    # Step 2 (Lab 1): tool use — fondamentals via the FMP API.
+    "financetoolkit>=2.2.0",
+]
+
+# Later ladder steps add: yfinance (step 7), chromadb (steps 5-6).
+
+[tool.uv]
+# Treat this as a script-style project: install the declared deps but do NOT
+# try to build/install the Exercises package itself.
+package = false

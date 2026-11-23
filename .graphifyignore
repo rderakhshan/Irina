@@ -1,0 +1,8 @@
+# Vendored third-party clone (Opik platform) - not part of Irina's own architecture
+src/back/opik/
+
+# Generated / noise
+graphify-out/
+__pycache__/
+.venv/
+opik/

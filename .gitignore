@@ -1,0 +1,47 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+!.env.example
+!.env.sample
+.venv/
+.irina/
+sessions/
+.challenge/
+graphify-out/
+.graphify_python
+.graphify_*.json
+skills/*
+!skills/README.md
+!skills/.gitkeep
+
+# Keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.crt
+id_rsa*
+id_ed25519*
+
+# Credential stores
+.netrc
+.npmrc
+.pypirc
+.aws/
+.azure/
+.gcloud/
+secrets/
+credentials/
+
+# Generated evaluation output
+reports/
+
+# Nested vendor clones and local IDE state
+opik/
+src/back/opik/
+.idea/
+.qodo/

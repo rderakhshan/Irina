@@ -1,0 +1,17 @@
+# Local env overrides (root .env is the shared store; this is optional)
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Runtime artifacts created by the memory layers / CLI
+data/
+logs/
+*.db
+*.db-journal
+working_memory.txt
+output/

@@ -1,0 +1,82 @@
+# Evaluation lab — checkpoint manifest
+# Update this file atomically after each verified slice.
+schema_version: 1
+branch: feature/irina-governance-v9
+base_sha: 0a5e57a
+owner: evaluation_lab
+
+checkpoints:
+  C0_baseline:
+    status: in_progress
+    tests: "python -m unittest tests.test_harness tests.test_cli"
+    rollback: "delete src/back/evaluations and tests/test_eval_*; branch remains"
+  C1a_metrics:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/metrics/
+      - src/back/evaluations/configs/metric_dictionary.yaml
+    tests: "python -m unittest tests.test_eval_metrics"
+    rollback: "revert this slice; dictionary is additive"
+  C1b_contracts:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/contracts/
+    tests: "python -m unittest tests.test_eval_metrics"
+    rollback: "revert this slice"
+  C1c_world_oracles:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/worlds/
+      - src/back/evaluations/oracles/
+    tests: "python -m unittest tests.test_eval_world"
+    rollback: "revert this slice; worlds are regenerated from seeds"
+  C1d_core_datasets:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/datasets/
+    tests: "python -m unittest tests.test_eval_suite"
+    rollback: "revert dataset catalog; no frozen artifacts written"
+  C1e_rag_fixture:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/rag_fixture/
+    tests: "python -m unittest tests.test_eval_rag"
+    rollback: "delete rag_fixture/; nothing else imports it except reference runner"
+  C2a_core_suite:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/checks/
+      - src/back/evaluations/runners/reference.py
+      - src/back/evaluations/reporting/
+      - src/back/evaluations/governance/
+    tests: "python -m unittest tests.test_eval_suite"
+    rollback: "revert this slice; reports are disposable"
+  C2b_l2_harness:
+    status: tests_passed
+    artifacts:
+      - src/back/evaluations/runners/harness_runner.py
+    tests: "python -m unittest tests.test_eval_harness"
+    rollback: "revert this slice"
+
+blocked:
+  - id: approvals
+    reason: Irina has no approval workflow or identity model
+  - id: production_gate
+    reason: Policy is application-level only; no independent runtime gate
+  - id: production_rag
+    reason: No ingestion/index pipeline; fixture-only
+  - id: calibration
+    reason: No human-adjudicated DS14 labels yet
+  - id: deep_eval
+    reason: Package not installed or verified
+  - id: online_eval
+    reason: Self-hosted Opik feature availability unverified
+
+next_tasks:
+  - DS03 claim cases and claim checks
+  - DS06 tool trajectory cases
+  - DS07/DS08 memory cases
+  - DS09 injection cases
+  - DS13 fault cases
+  - DS14 human calibration
+  - Opik dataset/experiment verification

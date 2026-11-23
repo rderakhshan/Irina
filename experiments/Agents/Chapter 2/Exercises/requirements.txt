@@ -1,0 +1,37 @@
+# Chapter 2 Exercises — dependency record
+#
+# This package runs against the SHARED environment at the repository root
+# (the base Python 3.12 install), so nothing here is installed in isolation.
+# This file PINS the exact versions the ecosystem expects, so the project is
+# reproducible if the shared env is ever recreated.
+#
+# Install everything in one shot with:
+#   pip install -r requirements.txt
+#
+# Steps currently implemented use only: openai-agents, python-dotenv.
+# The commented groups are used by later steps of the ladder (4→8b) and are
+# already present in the shared environment.
+
+# --- Step 1 (basic chatbot) ------------------------------------------------
+openai-agents==0.22.1
+openai==2.54.0
+python-dotenv==1.2.3
+
+# --- Step 2 (tool use, Lab 1 / 6) ------------------------------------------
+yfinance==0.2.66
+financetoolkit==2.2.0
+
+# --- Steps 3-4 (working + persistent memory, Lab 2) ------------------------
+# (uses only openai-agents SQLiteSession — nothing extra)
+
+# --- Steps 5-6 (episodic + semantic memory, Lab 3) --------------------------
+chromadb==1.5.9
+
+# --- Step 7 (ReAct via OpenAI SDK, Lab 4) -----------------------------------
+# (uses only openai-agents — OpenAI SDK instead of LlamaIndex by design)
+
+# --- Step 8a (evaluator-optimizer, Lab 5) -----------------------------------
+# (uses OpenAI WebSearchTool — nothing extra)
+
+# --- Step 8b (sequential chain, Lab 6) --------------------------------------
+# (reuses financetoolkit from Step 2)

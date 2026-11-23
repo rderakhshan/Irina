@@ -1,0 +1,1 @@
+"""Core scaffolding shared by every agent in the ecosystem."""

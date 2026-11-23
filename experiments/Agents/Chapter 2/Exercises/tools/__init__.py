@@ -1,0 +1,1 @@
+"""Pure functions wrapped as @function_tool for agent use (yfinance, FMP, ...)."""

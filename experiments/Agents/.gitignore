@@ -1,0 +1,30 @@
+# Real environment files — never commit secrets.
+# A template lives in .env.sample.
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Harness run artifacts
+Chapter 11/scorecard.json
+Chapter 11/scorecard.md
+Chapter 11/report.md

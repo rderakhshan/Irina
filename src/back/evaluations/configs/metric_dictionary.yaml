@@ -1,0 +1,831 @@
+# Canonical metric dictionary. One atomic metric per entry.
+# Bounds are mathematical domains, not pass thresholds.
+version: 1
+metrics:
+  - metric_id: llm.answer_relevance
+    pillar: llm
+    subpillar: answer_quality
+    concerns: [trustworthiness]
+    dataset_dependency: C
+    datasets: [DS01, DS14]
+    formula: JUDGE
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: human_calibration
+    undefined: unverified_judge
+    severity: medium
+    owner: llm_eval_owner
+    status: planned
+
+  - metric_id: llm.task_completion
+    pillar: llm
+    subpillar: answer_quality
+    concerns: [trustworthiness]
+    dataset_dependency: C
+    datasets: [DS01, DS06, DS14]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: expected_outcome
+    undefined: missing_gold
+    severity: high
+    owner: llm_eval_owner
+    status: planned
+
+  - metric_id: llm.hallucination_faithfulness
+    pillar: llm
+    subpillar: factual_reliability
+    concerns: [trustworthiness, explainability]
+    dataset_dependency: C
+    datasets: [DS03, DS14]
+    formula: JUDGE
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: claim_support_labels
+    undefined: unverified_judge
+    severity: high
+    owner: llm_eval_owner
+    status: planned
+
+  - metric_id: llm.abstention_accuracy
+    pillar: llm
+    subpillar: factual_reliability
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS01]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: labeled_answerability
+    undefined: empty_denominator
+    severity: high
+    owner: llm_eval_owner
+    status: planned
+
+  - metric_id: llm.claim_citation_coverage
+    pillar: llm
+    subpillar: financial_evidence
+    concerns: [explainability, trustworthiness]
+    dataset_dependency: N
+    datasets: [DS03]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: claim_citation_map
+    undefined: empty_denominator
+    severity: high
+    owner: finance_eval_owner
+    status: planned
+
+  - metric_id: llm.citation_resolution_rate
+    pillar: llm
+    subpillar: financial_evidence
+    concerns: [explainability]
+    dataset_dependency: N
+    datasets: [DS03]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: document_registry
+    undefined: empty_denominator
+    severity: high
+    owner: finance_eval_owner
+    status: planned
+
+  - metric_id: llm.claim_support_rate
+    pillar: llm
+    subpillar: financial_evidence
+    concerns: [trustworthiness]
+    dataset_dependency: C
+    datasets: [DS03, DS14]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: reviewed_claim_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: finance_eval_owner
+    status: planned
+
+  - metric_id: llm.unsupported_material_claim_rate
+    pillar: llm
+    subpillar: financial_evidence
+    concerns: [trustworthiness, safety]
+    dataset_dependency: C
+    datasets: [DS03, DS14]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: reviewed_claim_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: finance_eval_owner
+    status: planned
+
+  - metric_id: llm.numeric_exact_accuracy
+    pillar: llm
+    subpillar: financial_reasoning
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS04]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: decimal_calculator
+    undefined: empty_denominator
+    severity: critical
+    owner: finance_eval_owner
+    status: planned
+
+  - metric_id: llm.refusal_escalation_correctness
+    pillar: llm
+    subpillar: policy_behavior
+    concerns: [safety, accountability]
+    dataset_dependency: D
+    datasets: [DS05]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: policy_decision_table
+    undefined: empty_denominator
+    severity: critical
+    owner: policy_eval_owner
+    status: planned
+
+  - metric_id: llm.required_disclosure_presence
+    pillar: llm
+    subpillar: policy_behavior
+    concerns: [organizational_values, compliance]
+    dataset_dependency: N
+    datasets: [DS05]
+    formula: BINARY
+    value_type: bool
+    unit: boolean
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: disclosure_rule
+    undefined: missing_gold
+    severity: high
+    owner: policy_eval_owner
+    status: planned
+
+  - metric_id: llm.prompt_injection_success_rate
+    pillar: llm
+    subpillar: robustness
+    concerns: [security_resilience]
+    dataset_dependency: D
+    datasets: [DS09]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: forbidden_effect_oracle
+    undefined: empty_denominator
+    severity: critical
+    owner: security_eval_owner
+    status: planned
+
+  - metric_id: memory.retrieval_precision_at_k
+    pillar: memory
+    subpillar: retrieval
+    concerns: [trustworthiness, explainability]
+    dataset_dependency: D
+    datasets: [DS07]
+    formula: P_AT_K
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_memory_ids
+    undefined: empty_denominator
+    severity: medium
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.retrieval_recall_at_k
+    pillar: memory
+    subpillar: retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS07]
+    formula: R_AT_K
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_memory_ids
+    undefined: empty_denominator
+    severity: high
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.retrieval_mrr
+    pillar: memory
+    subpillar: retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS07]
+    formula: MRR
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_memory_ids
+    undefined: empty_denominator
+    severity: medium
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.retrieval_ndcg
+    pillar: memory
+    subpillar: retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS07]
+    formula: NDCG
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: graded_relevance
+    undefined: empty_denominator
+    severity: medium
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.write_accuracy
+    pillar: memory
+    subpillar: write_update
+    concerns: [trustworthiness, accountability]
+    dataset_dependency: D
+    datasets: [DS08]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: memory_state_reducer
+    undefined: empty_denominator
+    severity: high
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.preservation_recall
+    pillar: memory
+    subpillar: compaction
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS08]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: must_retain_facts
+    undefined: empty_denominator
+    severity: high
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: memory.compaction_ratio
+    pillar: memory
+    subpillar: compaction
+    concerns: [trustworthiness]
+    dataset_dependency: N
+    datasets: [DS08]
+    formula: COMP_RATIO
+    value_type: float64
+    unit: ratio
+    bounds: [0.0, null]
+    modes: [OFF, ON-T]
+    engine: deterministic
+    oracle: token_counts
+    undefined: empty_denominator
+    severity: low
+    owner: memory_eval_owner
+    status: planned
+
+  - metric_id: tools.tool_selection_accuracy
+    pillar: tools
+    subpillar: selection
+    concerns: [trustworthiness, accountability]
+    dataset_dependency: D
+    datasets: [DS06]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: acceptable_tool_sets
+    undefined: empty_denominator
+    severity: high
+    owner: tools_eval_owner
+    status: planned
+
+  - metric_id: tools.parameter_correctness
+    pillar: tools
+    subpillar: arguments
+    concerns: [trustworthiness, safety]
+    dataset_dependency: D
+    datasets: [DS06]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: canonical_arguments
+    undefined: empty_denominator
+    severity: high
+    owner: tools_eval_owner
+    status: planned
+
+  - metric_id: tools.trajectory_validity
+    pillar: tools
+    subpillar: trajectory
+    concerns: [accountability]
+    dataset_dependency: D
+    datasets: [DS06]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: partial_order_constraints
+    undefined: empty_denominator
+    severity: high
+    owner: tools_eval_owner
+    status: planned
+
+  - metric_id: tools.tool_schema_validity
+    pillar: tools
+    subpillar: arguments
+    concerns: [security_resilience]
+    dataset_dependency: N
+    datasets: [DS06]
+    formula: BINARY
+    value_type: bool
+    unit: boolean
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: typed_tool_schema
+    undefined: missing_telemetry
+    severity: high
+    owner: tools_eval_owner
+    status: planned
+
+  - metric_id: tools.approval_compliance_rate
+    pillar: tools
+    subpillar: authorization
+    concerns: [accountability, safety]
+    dataset_dependency: N
+    datasets: [DS05]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: approval_state_machine
+    undefined: empty_denominator
+    severity: critical
+    owner: policy_eval_owner
+    status: blocked
+
+  - metric_id: tools.policy_bypass_success_rate
+    pillar: tools
+    subpillar: authorization
+    concerns: [security_resilience, safety]
+    dataset_dependency: D
+    datasets: [DS05, DS09]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: forbidden_effect_ledger
+    undefined: empty_denominator
+    severity: critical
+    owner: security_eval_owner
+    status: planned
+
+  - metric_id: tools.unauthorized_execution_count
+    pillar: tools
+    subpillar: authorization
+    concerns: [accountability, safety]
+    dataset_dependency: N
+    datasets: [DS05]
+    formula: COUNT
+    value_type: int64
+    unit: count
+    bounds: [0, null]
+    modes: [OFF, ON-S, ON-T]
+    engine: deterministic
+    oracle: effect_ledger
+    undefined: missing_telemetry
+    severity: critical
+    owner: security_eval_owner
+    status: blocked
+
+  - metric_id: tools.retrieval_precision_at_k
+    pillar: tools
+    subpillar: financial_retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS02]
+    formula: P_AT_K
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_chunk_ids
+    undefined: empty_denominator
+    severity: high
+    owner: retrieval_eval_owner
+    status: planned
+
+  - metric_id: tools.retrieval_recall_at_k
+    pillar: tools
+    subpillar: financial_retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS02]
+    formula: R_AT_K
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_chunk_ids
+    undefined: empty_denominator
+    severity: critical
+    owner: retrieval_eval_owner
+    status: planned
+
+  - metric_id: tools.retrieval_mrr
+    pillar: tools
+    subpillar: financial_retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS02]
+    formula: MRR
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: relevant_chunk_ids
+    undefined: empty_denominator
+    severity: medium
+    owner: retrieval_eval_owner
+    status: planned
+
+  - metric_id: tools.retrieval_ndcg
+    pillar: tools
+    subpillar: financial_retrieval
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS02]
+    formula: NDCG
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: graded_relevance
+    undefined: empty_denominator
+    severity: medium
+    owner: retrieval_eval_owner
+    status: planned
+
+  - metric_id: tools.lookahead_violation_count
+    pillar: tools
+    subpillar: financial_retrieval
+    concerns: [compliance, trustworthiness]
+    dataset_dependency: N
+    datasets: [DS12]
+    formula: COUNT
+    value_type: int64
+    unit: count
+    bounds: [0, null]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: point_in_time_filter
+    undefined: missing_telemetry
+    severity: critical
+    owner: retrieval_eval_owner
+    status: planned
+
+  - metric_id: environment.extraction_field_accuracy
+    pillar: environment
+    subpillar: ingestion
+    concerns: [trustworthiness]
+    dataset_dependency: D
+    datasets: [DS11]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: canonical_document_fields
+    undefined: empty_denominator
+    severity: high
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.index_coverage
+    pillar: environment
+    subpillar: ingestion
+    concerns: [trustworthiness, auditing]
+    dataset_dependency: D
+    datasets: [DS11]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: expected_index_membership
+    undefined: missing_gold
+    severity: high
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.historical_snapshot_accuracy
+    pillar: environment
+    subpillar: temporal
+    concerns: [compliance, trustworthiness]
+    dataset_dependency: D
+    datasets: [DS12]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: labeled_snapshot_membership
+    undefined: missing_gold
+    severity: critical
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.availability_violation_count
+    pillar: environment
+    subpillar: temporal
+    concerns: [compliance]
+    dataset_dependency: N
+    datasets: [DS12]
+    formula: COUNT
+    value_type: int64
+    unit: count
+    bounds: [0, null]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: point_in_time_filter
+    undefined: missing_telemetry
+    severity: critical
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.fault_recovery_rate
+    pillar: environment
+    subpillar: resilience
+    concerns: [risk_management, security_resilience]
+    dataset_dependency: D
+    datasets: [DS13]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: fault_state_machine
+    undefined: empty_denominator
+    severity: high
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.safe_degradation_correctness
+    pillar: environment
+    subpillar: resilience
+    concerns: [safety, security_resilience]
+    dataset_dependency: D
+    datasets: [DS13]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: expected_degraded_state
+    undefined: empty_denominator
+    severity: critical
+    owner: environment_eval_owner
+    status: planned
+
+  - metric_id: environment.governance_event_completeness
+    pillar: environment
+    subpillar: audit
+    concerns: [auditing, accountability]
+    dataset_dependency: N
+    datasets: [DS15]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-T]
+    engine: deterministic
+    oracle: expected_event_manifest
+    undefined: missing_telemetry
+    severity: high
+    owner: audit_eval_owner
+    status: planned
+
+  - metric_id: environment.trace_correlation_rate
+    pillar: environment
+    subpillar: audit
+    concerns: [auditing]
+    dataset_dependency: N
+    datasets: [DS15]
+    formula: LABEL
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-T]
+    engine: deterministic
+    oracle: id_linkage
+    undefined: missing_telemetry
+    severity: high
+    owner: audit_eval_owner
+    status: planned
+
+  - metric_id: calibration.judge_precision
+    pillar: llm
+    subpillar: calibration
+    concerns: [auditing, trustworthiness]
+    dataset_dependency: D
+    datasets: [DS14]
+    formula: PRECISION
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: human_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: calibration_owner
+    status: planned
+
+  - metric_id: calibration.judge_recall
+    pillar: llm
+    subpillar: calibration
+    concerns: [auditing]
+    dataset_dependency: D
+    datasets: [DS14]
+    formula: RECALL
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: human_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: calibration_owner
+    status: planned
+
+  - metric_id: calibration.judge_fnr
+    pillar: llm
+    subpillar: calibration
+    concerns: [auditing, safety]
+    dataset_dependency: D
+    datasets: [DS14]
+    formula: FNR
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: human_labels
+    undefined: empty_denominator
+    severity: critical
+    owner: calibration_owner
+    status: planned
+
+  - metric_id: calibration.agreement_rate
+    pillar: llm
+    subpillar: calibration
+    concerns: [auditing]
+    dataset_dependency: D
+    datasets: [DS14]
+    formula: ACCURACY
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: adjudicated_labels
+    undefined: empty_denominator
+    severity: high
+    owner: calibration_owner
+    status: planned
+
+  - metric_id: llm.bias_judge
+    pillar: llm
+    subpillar: fairness
+    concerns: [fairness]
+    dataset_dependency: C
+    datasets: [DS10, DS14]
+    formula: JUDGE
+    value_type: float64
+    unit: score
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: paired_human_labels
+    undefined: unverified_judge
+    severity: high
+    owner: fairness_eval_owner
+    status: planned
+
+  - metric_id: environment.pii_redaction_detection_accuracy
+    pillar: environment
+    subpillar: privacy
+    concerns: [privacy]
+    dataset_dependency: D
+    datasets: [DS09, DS14]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF]
+    engine: deterministic
+    oracle: planted_canaries
+    undefined: missing_gold
+    severity: critical
+    owner: privacy_eval_owner
+    status: planned
+
+  - metric_id: environment.corpus_index_reproducibility
+    pillar: environment
+    subpillar: temporal
+    concerns: [lifecycle, auditing]
+    dataset_dependency: N
+    datasets: [DS12]
+    formula: HASH
+    value_type: bool
+    unit: boolean
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-T]
+    engine: deterministic
+    oracle: canonical_hash
+    undefined: missing_telemetry
+    severity: high
+    owner: environment_eval_owner
+    status: planned

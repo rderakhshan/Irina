@@ -1,0 +1,83 @@
+"""Run the offline core suite and write reports.
+
+Usage:
+    python -m src.back.evaluations.run_core --out reports/core
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from .contracts import IntegrationLevel
+from .datasets import build_core_datasets, flatten_datasets
+from .governance import write_coverage
+from .reporting import write_report
+from .runners import run_core_suite
+from .worlds import WorldFactory
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run Irina's offline core evaluation")
+    parser.add_argument("--seed", type=int, default=7)
+    parser.add_argument("--out", default="reports/core")
+    parser.add_argument("--opik", action="store_true", help="mirror results to local Opik")
+    args = parser.parse_args(argv)
+
+    world = WorldFactory().build(seed=args.seed)
+    grouped = build_core_datasets(world)
+    cases = flatten_datasets(grouped)
+    result = run_core_suite(world, cases)
+
+    json_path, md_path = write_report(
+        result, world_manifest=world.manifest, output_dir=args.out
+    )
+    coverage_path = write_coverage(args.out)
+
+    if args.opik:
+        from ..harness.observability import ensure_opik
+        from .opik_adapter import ensure_dataset, flush, log_trace
+
+        status = ensure_opik()
+        if status.state not in {"reused", "started"}:
+            print(f"[opik] {status.detail}; skipping mirror", file=sys.stderr)
+        else:
+            ensure_dataset(
+                f"irina-core-{result.dataset_version}",
+                [case.as_dict() for case in cases],
+            )
+            for outcome in result.outcomes:
+                log_trace(
+                    f"eval:{outcome.case_id}",
+                    input={"case_id": outcome.case_id, "family_id": outcome.family_id},
+                    output={
+                        "passed": outcome.passed,
+                        "metrics": [metric.as_dict() for metric in outcome.metrics],
+                    },
+                    metadata={
+                        "integration_level": IntegrationLevel.L1_SIMULATED_WORKFLOW.value
+                    },
+                )
+            flush()
+
+    print(
+        json.dumps(
+            {
+                "cases": len(result.outcomes),
+                "passed": result.passed,
+                "failed": result.failed,
+                "undefined": result.undefined,
+                "report": str(json_path),
+                "markdown": str(md_path),
+                "coverage": str(coverage_path),
+            },
+            indent=2,
+        )
+    )
+    return 0 if result.failed == 0 else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

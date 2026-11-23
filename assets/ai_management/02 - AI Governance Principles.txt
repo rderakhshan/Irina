@@ -1,0 +1,1431 @@
+Title: AI Governance Principles
+Video: https://www.youtube.com/watch?v=UkeJG1o68c8
+Source: UkeJG1o68c8.en.vtt (YouTube captions)
+Lines: 1426
+
+00:00:03 This training is provided by Safe
+00:00:03 Shield. We're a professional training
+00:00:05 provider that specializes in cyber
+00:00:07 security, compliance, risk management,
+00:00:10 and AI governance. Our goal is to give
+00:00:13 professionals the knowledge and skills
+00:00:14 required to advance their careers and
+00:00:16 get ahead of the competition. This free
+00:00:19 course is part of that goal. We want to
+00:00:21 make trusted highquality education
+00:00:23 accessible and to support the
+00:00:25 development of responsible practices in
+00:00:27 new and emerging fields such as AI
+00:00:29 governance. Welcome to this course on
+00:00:31 the principles of AI governance. This
+00:00:34 course is a continuation of our learning
+00:00:36 journey and follows on from our AI
+00:00:38 governance foundations course.
+00:00:41 In our AI governance foundations course,
+00:00:44 we laid the groundwork by introducing
+00:00:46 the key concepts, risks, and motivations
+00:00:48 behind AI governance. Here, we'll build
+00:00:51 on that by moving from the why of AI
+00:00:54 governance and into the how. We'll cover
+00:00:56 how governance is structured and applied
+00:00:58 through universal principles and
+00:01:00 international frameworks. During this
+00:01:02 course, we have three main goals. First
+00:01:05 is to help deepen your understanding of
+00:01:07 why AI governance is essential for
+00:01:09 organizations that adopt or develop AI
+00:01:11 solutions. Second to examine the core
+00:01:14 principles that guide responsible AI in
+00:01:17 the real world. We'll cover safety,
+00:01:19 accountability, transparency, and
+00:01:21 fairness along with privacy, human
+00:01:23 oversight, sustainability, and the
+00:01:26 continuous monitoring of AI systems.
+00:01:29 Finally, we'll connect these principles
+00:01:31 with global frameworks including ISOC
+00:01:34 4201, the NIST AI risk management
+00:01:37 framework, the OECDI principles, and the
+00:01:40 European Union artificial intelligence
+00:01:42 act. We'll be focusing on how these
+00:01:45 principles take shape in practice.
+00:01:47 You'll see how they are applied across
+00:01:49 industries, embedded in standards, and
+00:01:51 enforced through regulation. We'll also
+00:01:53 look at the opportunities and the
+00:01:55 challenges of applying governance in a
+00:01:57 real world context. By the end of this
+00:02:00 course, you should feel confident in
+00:02:02 recognizing and explaining the
+00:02:03 principles of AI governance and have the
+00:02:06 knowledge to apply them as part of your
+00:02:07 professional career.
+00:02:10 In our first course, we described AI
+00:02:12 governance as a way to link an AI
+00:02:14 systems outcomes back to human choices
+00:02:17 and clear responsibilities. Let's build
+00:02:20 on that. AI is already woven into most
+00:02:23 major industries. When it works well, it
+00:02:25 saves time and improves decisions. When
+00:02:28 it doesn't, people feel it. Unfair
+00:02:31 rejections, privacy leaks, or automated
+00:02:33 decisions no one can explain. Governance
+00:02:35 keeps those risks in view from the
+00:02:37 start. It asks simple questions that
+00:02:39 shape everything that follows. What is
+00:02:42 this system for? Who is responsible for
+00:02:44 it? How will people stay involved? And
+00:02:47 what evidence will we keep that it's
+00:02:48 working as intended? Laws such as the EU
+00:02:51 AI act expect you to show how risks are
+00:02:54 managed. That means having records,
+00:02:56 oversight, and a way to act when things
+00:02:58 drift. Most of all, governance matters
+00:03:01 because people matter. If those affected
+00:03:03 can understand what a system does, ask
+00:03:06 for a review and trust that someone is
+00:03:08 accountable. Adoption of that system is
+00:03:10 easier and outcomes are more fair.
+00:03:12 That's the frame for the rest of this
+00:03:14 course. We'll take the principles you
+00:03:16 already know. accountability,
+00:03:18 transparency, fairness, privacy, safety,
+00:03:23 oversight, sustainability, and
+00:03:25 monitoring, and show you how they show
+00:03:27 up in real life scenarios. With that
+00:03:29 frame in mind, let's zoom out to the
+00:03:31 global picture these ideas exist within.
+00:03:35 Our fundamentals course introduced the
+00:03:37 idea that AI governance is the result of
+00:03:39 a growing global consensus rather than
+00:03:42 the product of a single country or
+00:03:44 organization. Here we'll take that a
+00:03:46 step further looking beyond the what and
+00:03:48 instead into how they converge, where
+00:03:50 they differ, and why it matters. This
+00:03:52 consensus can be seen in the shared
+00:03:54 values across different jurisdictions
+00:03:56 and their relevant standards and
+00:03:58 frameworks. While terminology might
+00:04:00 differ slightly, the themes of
+00:04:02 accountability, transparency, fairness,
+00:04:05 human rights, safety, and sustainability
+00:04:07 remain consistent. Let's quickly revisit
+00:04:10 the major standards and frameworks that
+00:04:12 are relevant to our learning. The OECD
+00:04:14 AI principles adopted by over 40
+00:04:17 countries focused on economic and social
+00:04:20 responsibility. The UNESCO
+00:04:22 recommendation on the ethics of AI
+00:04:24 endorsed by nearly 200 countries. Unique
+00:04:27 in covering areas that are
+00:04:29 underrepresented in most tech focused
+00:04:31 frameworks. The EU AI act the first on
+00:04:34 our list to be a legally binding
+00:04:36 regulation. It categorizes AI systems by
+00:04:39 risk level and enforces governance
+00:04:41 requirements appropriately. ISO 4201
+00:04:45 the first of its kind. It provides a
+00:04:47 certifiable management system
+00:04:49 specifically for AI. The NIST AI risk
+00:04:52 management framework often referred to
+00:04:54 as the NIST AI RMF. This US-based
+00:04:58 framework focuses on putting responsible
+00:05:00 AI into practice. We'll cover these in
+00:05:02 more depth later, but keep them in mind.
+00:05:05 They set the stage for how we approach
+00:05:06 AI governance. Now that we've outlined
+00:05:09 the most important principles and
+00:05:11 players in global AI governance, we can
+00:05:13 begin to understand how they provide
+00:05:15 context for what we as learners should
+00:05:17 focus on. It helps us see how AI
+00:05:20 governance is evolving into a lasting
+00:05:22 part of how society manages technology.
+00:05:24 One that shapes both the rules that
+00:05:26 organizations must follow and the
+00:05:28 standards of trust that are being set by
+00:05:30 public demand. So what does that
+00:05:32 actually look like in practice? To
+00:05:34 explore this, we're going to look at the
+00:05:36 principle of accountability and how it's
+00:05:38 central to AI governance.
+00:05:41 You may remember from our first course
+00:05:43 that accountability was introduced as a
+00:05:45 way of ensuring AI systems are not being
+00:05:48 treated as autonomous black boxes. It
+00:05:50 provides a reliable way to link AI's
+00:05:52 decision-m and outcomes to human choices
+00:05:55 and responsibility. Here we'll expand on
+00:05:58 that idea and look at how accountability
+00:06:00 is structured and demonstrated in a
+00:06:02 practical sense. Accountability begins
+00:06:04 with clarity which means assigning clear
+00:06:06 roles. Who is responsible for managing
+00:06:09 data? Who oversees development? Who
+00:06:12 monitors performance once the system is
+00:06:14 in use. Without these roles,
+00:06:16 responsibility gets hard to pin down and
+00:06:18 it becomes harder to address issues when
+00:06:20 they arise. That's why many frameworks
+00:06:23 put accountability front and center. For
+00:06:26 example, ISO 4201 doesn't just say that
+00:06:29 organizations should be accountable. It
+00:06:31 specifies how accountability should be
+00:06:33 embedded into policies and processes
+00:06:35 across the entire AI life cycle. It
+00:06:38 requires organizations to define
+00:06:40 responsibilities at every stage,
+00:06:42 document decision-m and make sure those
+00:06:45 decisions can be linked back to those
+00:06:46 responsible. Now, this doesn't just
+00:06:49 apply to technical teams and those who
+00:06:51 develop AI systems. Leadership also
+00:06:54 plays a major role with oversight being
+00:06:56 a key part of accountability. Decision
+00:06:59 makers are expected to ensure that AI
+00:07:01 use reflects the values of their
+00:07:02 organization while still meeting
+00:07:04 regulatory requirements and without
+00:07:06 introducing unnecessary risk. This
+00:07:09 oversight should be both internal and
+00:07:11 external with things like certification
+00:07:13 and audits playing a big role in
+00:07:15 demonstrating and maintaining
+00:07:16 accountability within the organization.
+00:07:19 It's important to remember that
+00:07:20 accountability isn't just for assigning
+00:07:22 blame when something goes wrong. It
+00:07:24 serves as an effective way to change
+00:07:26 internal culture to one where
+00:07:28 individuals and teams understand their
+00:07:30 obligations, have the authority to act
+00:07:32 responsibly, and know how to escalate
+00:07:34 problems if they need to. Providing
+00:07:36 practical tools helps to bring this
+00:07:38 culture to life. Audit logs, for
+00:07:40 example, create a traceable record of
+00:07:43 decisions, ensuring actions can be
+00:07:45 reviewed and justified. Impact
+00:07:47 assessments force teams to pause and
+00:07:49 consider the wider consequences of
+00:07:51 deploying AI before it goes live. And
+00:07:53 reporting frameworks make it possible to
+00:07:55 transparently communicate both successes
+00:07:58 and failures. Tools like these can be an
+00:08:01 invaluable way of putting accountability
+00:08:03 into practice and changing
+00:08:04 organizational culture for the better.
+00:08:06 The main takeaway here is that
+00:08:08 accountability builds trust. It shows
+00:08:10 that organizations are thinking about
+00:08:12 more than just profit or efficiency and
+00:08:15 that AI systems are being managed
+00:08:17 responsibly in line with ethical and
+00:08:19 social expectations.
+00:08:22 Now, we've looked at accountability and
+00:08:24 how it gives us the tools to trace who
+00:08:26 is responsible. Let's move on to
+00:08:28 transparency and explanability to help
+00:08:31 us understand how those responsibilities
+00:08:33 are carried out in practice. We've
+00:08:35 already touched on one of the greatest
+00:08:37 challenges in AI, the so-called black
+00:08:39 box. An AI system whose internal
+00:08:42 workings and decisionmaking are
+00:08:44 difficult to decipher and understand
+00:08:46 even for its creators. Transparency and
+00:08:49 explanability help us to tackle the
+00:08:51 blackbox problem in a practical way.
+00:08:54 First, let's talk about transparency.
+00:08:56 Transparency is all about openness and
+00:08:58 it starts with documentation. Everything
+00:09:01 should be recorded from data sources to
+00:09:04 training methods and model limitations.
+00:09:06 This provides a clear record of how a
+00:09:08 system was built while also
+00:09:10 communicating its scope and risks to
+00:09:12 those who use or oversee it.
+00:09:14 Transparency also involves communicating
+00:09:16 the intended purpose of an AI system and
+00:09:19 the potential risks it could encounter.
+00:09:21 Explainability, on the other hand, is
+00:09:23 all about interpretation. It makes AI
+00:09:26 decisions understandable in human terms
+00:09:28 so they can be questioned, corrected,
+00:09:30 and trusted. For simple models, this is
+00:09:33 relatively straightforward. But for more
+00:09:35 complex AI, we need to rely on
+00:09:37 techniques specifically designed to
+00:09:39 reveal how decisions are made. For
+00:09:41 example, local interpretable model
+00:09:43 agnostic explanations or lime builds a
+00:09:46 simplified interpretable model around a
+00:09:48 single decision to highlight which
+00:09:50 factors shaped that outcome. Techniques
+00:09:52 like lime can be hard to picture. So,
+00:09:54 here's a simple way to think about it.
+00:09:56 Imagine the whole model as a city. Lime
+00:09:59 doesn't redraw the entire map. It zooms
+00:10:01 into one neighborhood and draws a small,
+00:10:03 easyto- read map of just that area. It
+00:10:06 won't explain every street in the city,
+00:10:08 but it shows which turns mattered for
+00:10:10 this trip. You may also see SHAP
+00:10:12 mentioned in other resources, but we'll
+00:10:15 stay with Lime here to keep things
+00:10:16 simple. Governance frameworks also
+00:10:18 stress the importance of tailoring
+00:10:20 explanations to different audiences.
+00:10:23 Technical teams may require detailed
+00:10:25 metrics while end users need plain
+00:10:27 language justifications. It can often be
+00:10:30 effective to adopt a layered approach to
+00:10:32 transparency, high-level summaries for
+00:10:35 the public, technical documentation for
+00:10:37 regulators, and detailed logs for
+00:10:40 auditors. Importantly, explanability
+00:10:42 must be designed into systems from the
+00:10:44 beginning and not shoehorned in at a
+00:10:46 later date. Together, transparency and
+00:10:49 explanability underpin both
+00:10:50 accountability and fairness.
+00:10:54 Now, we've seen how transparency and
+00:10:56 explanability open up the black box and
+00:10:59 make AI decisions more understandable.
+00:11:02 But even if we can see how an AI works,
+00:11:04 we still need to ask an important
+00:11:06 question. Is it fair? That brings us to
+00:11:08 our next principle, fairness and
+00:11:11 non-discrimination.
+00:11:12 Fairness in AI governance ensures that
+00:11:15 systems do not reinforce or amplify
+00:11:17 bias. As we learned in our first course,
+00:11:19 AI models reflect the data they are
+00:11:21 trained on. If that data contains
+00:11:24 inequalities or blind spots, the model
+00:11:26 may reproduce them in its decisions.
+00:11:29 Bias can enter at many stages through
+00:11:31 unrepresentative data sets, flawed
+00:11:34 labeling, or even subtle design choices
+00:11:36 in the algorithm. For example, facial
+00:11:38 recognition systems have historically
+00:11:40 been less accurate for women and people
+00:11:42 of color because their training data was
+00:11:44 not diverse enough. In financial
+00:11:46 services, credit scoring models have at
+00:11:49 times unfairly disadvantaged minority
+00:11:51 groups. To avoid this, we must treat
+00:11:54 fairness as a continuous process that
+00:11:56 requires ongoing adjustment. Governance
+00:11:59 frameworks recommend bias assessments at
+00:12:01 every stage of the AI life cycle, data
+00:12:04 collection, model training, deployment,
+00:12:06 and ongoing monitoring. These checks
+00:12:08 might involve testing models for
+00:12:10 disperate impacts, rebalancing data
+00:12:12 sets, or refining algorithms. We must
+00:12:15 also consider inclusivity in our pursuit
+00:12:17 of fairness. An AI system that works
+00:12:20 well for some groups but consistently
+00:12:22 excludes or misrepresents others cannot
+00:12:24 truly be called fair. For example, if a
+00:12:27 healthcare tool only reflects data from
+00:12:29 younger patients, it may not serve older
+00:12:31 populations effectively. This is why
+00:12:34 governance frameworks place emphasis on
+00:12:36 inclusivity alongside fairness. The EUAI
+00:12:40 act makes this explicit by classifying
+00:12:42 discriminatory practices such as systems
+00:12:44 that exclude or disadvantage people
+00:12:47 based on race, gender, age, disability,
+00:12:50 or socioeconomic status as high risk or
+00:12:53 even unacceptable. Ultimately, fairness
+00:12:55 is about protecting human rights and
+00:12:57 ensuring equity. Just as accountability
+00:13:00 and transparency build trust, fairness
+00:13:03 ensures that AI systems contribute
+00:13:05 positively to society rather than
+00:13:07 perpetuating harm.
+00:13:09 We now need to turn our attention to
+00:13:11 another principle that protects
+00:13:13 individual rights, privacy and data
+00:13:16 protection. In our first course, we
+00:13:18 introduced the idea that AI relies
+00:13:20 heavily on data and that with that
+00:13:22 reliance comes responsibility. Here
+00:13:24 we'll go deeper into how governance
+00:13:26 frameworks address this responsibility
+00:13:28 in practice. AI systems often need large
+00:13:31 amounts of personal or sensitive data to
+00:13:33 function well. Without proper
+00:13:35 safeguards, this creates serious risks.
+00:13:38 Mishandling of this data can result in
+00:13:40 breaking the law and undermining trust
+00:13:42 in AI technology. That's why governance
+00:13:45 frameworks consistently put privacy at
+00:13:47 the forefront. In line with good privacy
+00:13:50 practices, people should know what data
+00:13:52 is being collected, how it will be used,
+00:13:54 and whether they can correct or delete
+00:13:55 it. We should also only be collecting
+00:13:58 the data that is necessary. This is the
+00:14:00 principle of minimization. It's why a
+00:14:02 routine health checkup form might ask
+00:14:04 your medical history, but not your
+00:14:06 social media passwords. We only want to
+00:14:09 focus on the data that's most relevant
+00:14:10 to us. We can add another layer of data
+00:14:13 protection by employing technical
+00:14:15 safeguards. This includes methods like
+00:14:17 anonymization, pseudonymization or
+00:14:20 encryption. All of which help to reduce
+00:14:22 the risk of exposing personal data. More
+00:14:25 advanced approaches like differential
+00:14:27 privacy even allow data to be used for
+00:14:29 training AI models while making it
+00:14:31 nearly impossible to trace information
+00:14:33 back to any one individual. Good
+00:14:35 governance means checking systems before
+00:14:38 problems occur. One common tool for this
+00:14:40 is the data protection impact assessment
+00:14:42 or DPIA. Think of it like a pre-flight
+00:14:45 check before an AI system goes live. A
+00:14:48 DPIA asks questions like, "What personal
+00:14:51 data will this system use? Could that
+00:14:53 information be misused or exposed? And
+00:14:56 if so, what safeguards need to be in
+00:14:58 place?" By running this kind of
+00:14:59 assessment, risks can be spotted and
+00:15:02 reduced early rather than being
+00:15:04 discovered after harm has already
+00:15:05 occurred. Fundamentally, privacy is
+00:15:08 rooted in human dignity. When people see
+00:15:10 that their data is being treated with
+00:15:12 care, they are more likely to trust the
+00:15:14 systems that use it. That trust in turn
+00:15:17 makes AI more effective because people
+00:15:19 will actually use and support it.
+00:15:21 Privacy and data protection are what
+00:15:23 make the use of AI sustainable and
+00:15:25 socially acceptable.
+00:15:28 The protection that privacy provides
+00:15:30 only matters if the systems themselves
+00:15:32 behave reliably and cannot be easily
+00:15:34 manipulated. So let's look at the twin
+00:15:37 concerns of safety and security. Safety
+00:15:40 and security ensure that AI systems
+00:15:42 function reliably and remain resilient
+00:15:44 to threats. Without them, AI could cause
+00:15:47 unintended harm or be manipulated by
+00:15:49 malicious actors. Safety means
+00:15:52 confirming that an AI system performs as
+00:15:54 intended and avoids unexpected
+00:15:56 consequences. This requires extensive
+00:15:59 testing validation under different
+00:16:01 conditions and continuous monitoring in
+00:16:03 real world settings. For example,
+00:16:06 self-driving vehicles must be tested in
+00:16:08 varied traffic and weather scenarios to
+00:16:10 ensure they perform reliably. Security
+00:16:13 on the other hand is about protection
+00:16:14 against attacks. AI introduces unique
+00:16:17 vulnerabilities such as data poisoning
+00:16:20 where corrupted data skews outcomes or
+00:16:22 adversarial examples where small
+00:16:24 manipulations trick a model into making
+00:16:26 mistakes. Models need to be deployed in
+00:16:29 secure environments to prevent
+00:16:30 tampering, kept up to date so new that
+00:16:33 vulnerabilities aren't left open and
+00:16:35 actively monitored to catch attacks as
+00:16:37 they happen. Each of these defenses
+00:16:39 addresses a different way an AI system
+00:16:41 could be exploited, making the overall
+00:16:44 system more resilient. Governance
+00:16:46 frameworks also recommend proactive
+00:16:48 measures like red teaming where experts
+00:16:50 deliberately stress test AI systems and
+00:16:53 incident response plans tailored
+00:16:55 specifically to AI. The aim is to
+00:16:57 improve overall safety and security
+00:17:00 while also providing assurance to both
+00:17:02 stakeholders and regulators. Safety and
+00:17:05 security are governance responsibilities
+00:17:07 that ensure AI benefits society without
+00:17:09 putting people or organizations at risk.
+00:17:12 Now, even reliable secure systems still
+00:17:15 need people in the loop. So, let's take
+00:17:16 a look at human oversight.
+00:17:19 This is a good time to address a
+00:17:21 potential pitfall with complex AI. AI is
+00:17:24 not meant to replace human judgment. In
+00:17:26 fact, as we'll cover, AI needs human
+00:17:29 judgment to function effectively as well
+00:17:30 as ethically. AI systems have begun to
+00:17:33 take on increasingly complex roles. as
+00:17:36 they do. It's important that we keep
+00:17:38 humans as part of the decision-making
+00:17:39 process, especially when outcomes have
+00:17:42 ethical, legal, or social consequences.
+00:17:45 Human oversight can take different forms
+00:17:47 depending on the level of risk. In lower
+00:17:50 risk systems, occasional checks may
+00:17:52 suffice, but in higher risk areas like
+00:17:54 medical diagnosis or financial services,
+00:17:57 humans must actively supervise decisions
+00:18:00 to prevent harm. The key is to tailor
+00:18:02 human involvement to the potential
+00:18:04 impact of the AI system. We can think of
+00:18:07 oversight as a spectrum. Human in the
+00:18:09 loop. Human in the loop means people
+00:18:11 approve or validate AI decisions before
+00:18:14 they are finalized. Human on the loop.
+00:18:17 Here people supervise an AI system and
+00:18:19 can intervene if it starts to behave
+00:18:21 unexpectedly. Human in command. With
+00:18:24 human in command, people retain ultimate
+00:18:27 control and decision-making authority.
+00:18:29 This makes sure accountability remains
+00:18:31 completely in human hands. However,
+00:18:34 oversight is only effective when humans
+00:18:36 can understand and influence AI's
+00:18:38 decisions. This means equipping people
+00:18:40 with the knowledge to interpret AI
+00:18:42 behavior and the authority to act when
+00:18:44 things go wrong. When oversight is
+00:18:46 properly managed, it allows humans to
+00:18:49 prevent harm by stepping in before
+00:18:50 errors or unfair outcomes happen. Human
+00:18:53 oversight keeps decisions grounded in
+00:18:55 real world values. Machines may optimize
+00:18:58 for efficiency, but it's humans that
+00:19:01 consider fairness, compassion, and
+00:19:03 cultural context. By involving humans in
+00:19:06 important decisions, it keeps AI systems
+00:19:08 accountable and allows them to be both
+00:19:10 technically effective and trustworthy.
+00:19:14 So far, we've focused on principles that
+00:19:16 reduce risks, fairness, privacy, safety,
+00:19:19 and oversight. But governance is also
+00:19:22 about ensuring AI contributes to the
+00:19:24 world in a positive way. This brings us
+00:19:26 to our final principle, sustainability
+00:19:29 and societal benefit. Just as fairness,
+00:19:32 privacy, and oversight guide how AI
+00:19:34 should operate, sustainability and
+00:19:36 societal benefit guide why it should
+00:19:38 operate. AI governance should be about
+00:19:41 promoting positive outcomes for people
+00:19:43 and society. Sustainability asks us to
+00:19:45 think about the broader impacts of AI
+00:19:48 from environmental footprint to social
+00:19:50 inclusion. Training large-scale models
+00:19:52 can consume enormous amounts of energy.
+00:19:55 And without mindful design, AI could
+00:19:57 worsen inequalities or harm vulnerable
+00:19:59 communities. Governance encourages
+00:20:02 anticipating these effects and taking
+00:20:04 steps to minimize negative consequences
+00:20:06 like using energyefficient
+00:20:08 infrastructure or consulting with
+00:20:10 diverse groups during the design phase.
+00:20:12 Societal benefit focuses on ensuring
+00:20:14 that AI serves everyone rather than a
+00:20:16 select few. Achieving this requires
+00:20:19 understanding the diverse needs and
+00:20:21 experiences of the people affected by AI
+00:20:23 systems. For instance, a model designed
+00:20:26 without considering marginalized
+00:20:28 communities may inadvertently exclude
+00:20:30 them or produce biased outcomes against
+00:20:32 them. By thoughtfully designing systems
+00:20:34 with these perspectives in mind, AI can
+00:20:37 better uphold human rights and respect
+00:20:39 cultural differences. When AI decisions
+00:20:42 reinforce fairness, inclusivity, and
+00:20:44 human- centered values, the technology
+00:20:46 supports social trust instead of
+00:20:48 undermining it. UNESCO's ethics
+00:20:50 recommendations and the OECD AI
+00:20:53 principles illustrate how ethical
+00:20:55 alignment can be implemented, aiming to
+00:20:57 guide organizations into thinking beyond
+00:20:59 efficiency and instead towards the
+00:21:01 broader societal impacts of their AI
+00:21:03 systems. When sustainability is part of
+00:21:06 the work, AI stops being just tech and
+00:21:09 becomes something that clearly affects
+00:21:11 communities and the environment. This
+00:21:13 perspective helps us anticipate
+00:21:14 unintended consequences, design more
+00:21:17 inclusive systems, and judge whether AI
+00:21:20 is delivering value that aligns with
+00:21:22 broader social and environmental
+00:21:23 responsibilities.
+00:21:26 AI systems are never finished products.
+00:21:29 They change over time and unfortunately
+00:21:31 not always for the better. As data
+00:21:33 shifts, user behavior evolves, or new
+00:21:36 threats appear, an AI system that once
+00:21:38 performed well can begin to drift.
+00:21:40 That's why governance must include
+00:21:42 continuous monitoring and improvement
+00:21:44 principles that keep systems reliable,
+00:21:47 fair, and aligned with expectations
+00:21:49 throughout their life cycle. This might
+00:21:51 sound straightforward, but monitoring
+00:21:53 starts with knowing what to look for.
+00:21:55 Organizations track performance on
+00:21:57 measures like accuracy, fairness, or
+00:21:59 safety, and they define in advance what
+00:22:01 would signal a problem. For example, if
+00:22:04 a model used in recruitment begins
+00:22:06 producing results that exclude certain
+00:22:08 groups, monitoring allows us to detect
+00:22:10 the change before it becomes systemic
+00:22:12 and causes harm. Improvement builds
+00:22:14 directly on top of monitoring. Once
+00:22:17 we've identified problems, we have to
+00:22:19 learn from them and adapt to avoid them
+00:22:21 in the future. If we look at a fraud
+00:22:23 detection system, it must constantly
+00:22:25 evolve as criminals develop new
+00:22:27 techniques. Without regular updates, the
+00:22:30 model will slowly become less effective
+00:22:31 and more vulnerable. Retraining with new
+00:22:34 data and learning from past failures
+00:22:36 means the system can keep pace. For this
+00:22:39 to work, monitoring and improvement need
+00:22:41 to be organized and visible. Audits,
+00:22:43 reviews, and incident reports provide a
+00:22:45 record that shows what has been checked,
+00:22:47 what has been fixed, and what has been
+00:22:49 learned. This makes the process
+00:22:51 trustworthy for both regulators and the
+00:22:53 people that rely on the system. In
+00:22:55 practice, continuous monitoring and
+00:22:57 improvement keep governance moving. They
+00:22:59 help you spot drift early. You learn
+00:23:01 from incidents and fold those lessons
+00:23:03 back into how the system is built and
+00:23:05 run.
+00:23:07 Up to now, we've been talking about
+00:23:09 governance principles as overarching
+00:23:11 concepts, but these principles only
+00:23:13 matter if they're put into practice. So
+00:23:15 let's revisit accountability and see how
+00:23:18 organizations actually embed this
+00:23:19 principle into the way they work. Begins
+00:23:22 with leadership. In our first course, we
+00:23:24 introduced the idea that AI
+00:23:26 responsibility can't sit only with the
+00:23:28 technical teams. Leaders set the tone.
+00:23:31 If executives and boards treat
+00:23:33 accountability as optional, then any
+00:23:35 policies or processes risk becoming box
+00:23:37 ticking exercises. But when leaders make
+00:23:40 themselves answerable for how AI is
+00:23:42 used, accountability becomes part of the
+00:23:45 culture rather than an empty statement.
+00:23:47 From there, responsibilities need to be
+00:23:50 clear. In practice, this means defining
+00:23:52 who does what across the AI life cycle.
+00:23:55 For example, a data scientist may handle
+00:23:57 model development, a compliance officer
+00:24:00 may check regulatory alignment, and
+00:24:02 senior managers may be kept informed of
+00:24:04 major risks. The exact titles don't
+00:24:07 matter as much as the clarity. Everyone
+00:24:09 should know where responsibility begins
+00:24:11 and ends. Without this clarity,
+00:24:14 accountability quickly dissolves into
+00:24:16 fingerpointing. Documentation also plays
+00:24:19 a major role in this process. Records
+00:24:21 like testing procedures, decision logs,
+00:24:24 or impact assessments create a trail
+00:24:26 that can be reviewed if something goes
+00:24:28 wrong. When you can show why choices
+00:24:30 were made and who made them,
+00:24:31 accountability becomes visible and works
+00:24:34 to build consumer trust whilst showing
+00:24:36 regulators your compliance efforts.
+00:24:38 Training is just as important. If staff
+00:24:41 don't know their responsibilities or
+00:24:43 don't have the confidence to act on
+00:24:44 them, then accountability can fall by
+00:24:47 the wayside. Training ensures that
+00:24:49 everyone from developers all the way up
+00:24:51 to senior leadership and decision makers
+00:24:53 understands their obligations and more
+00:24:55 importantly why those obligations
+00:24:57 matter. Finally, accountability must be
+00:25:00 supported by pathways for action. When
+00:25:03 problems arise, there needs to be a
+00:25:05 clear process for escalation and
+00:25:07 remediation. By giving people both the
+00:25:09 authority and the means to act,
+00:25:11 organizations make accountability a real
+00:25:14 practical effort. The key takeaway here
+00:25:16 is that accountability should feel like
+00:25:18 a living practice that's organically
+00:25:20 built into leadership roles,
+00:25:22 documentation, training, and response.
+00:25:25 When applied in this way, accountability
+00:25:27 ensures that AI outcomes are linked to
+00:25:29 real people, real responsibilities, and
+00:25:31 real consequences.
+00:25:34 Let's move on to transparency. We
+00:25:37 already introduced transparency as
+00:25:38 openness. Documenting how a system is
+00:25:41 built and explaining its decisions in
+00:25:43 ways people can understand. Now, let's
+00:25:45 go a step further and look at how
+00:25:47 organizations can put this into practice
+00:25:49 day-to-day. Transparency works best when
+00:25:52 it's embedded as part of the workflow
+00:25:54 itself. That means building
+00:25:56 documentation into the development
+00:25:57 process rather than thinking of it as
+00:25:59 paperwork to fill in later. For example,
+00:26:02 recording the purpose of a model, its
+00:26:04 training data, and its known limitations
+00:26:06 should be just as routine as running
+00:26:08 code tests. This is often referred to as
+00:26:10 documentation by design and allows
+00:26:12 transparency to grow naturally from the
+00:26:14 way teams already work. It also matters
+00:26:17 how information is shared. As we touched
+00:26:19 on earlier, not everyone needs the same
+00:26:21 level of detail, and too much
+00:26:23 information can be just as unhelpful as
+00:26:25 too little. Governance frameworks
+00:26:27 address this by recommending a tiered
+00:26:29 approach to transparency. Of course,
+00:26:31 there are challenges. Being open can
+00:26:34 clash with other pressures like
+00:26:35 protecting intellectual property or
+00:26:37 guarding against security risks. A
+00:26:39 thoughtful approach means finding the
+00:26:41 right balance. Enough openness to build
+00:26:44 trust without exposing sensitive details
+00:26:46 that could be misused. As with
+00:26:48 monitoring and improvement, transparency
+00:26:50 is sustained by culture. Teams need to
+00:26:53 feel encouraged when raising concerns or
+00:26:55 identifying risks. When openness is
+00:26:58 treated as a strength, it's easier to
+00:27:00 spot problems early and maintain trust
+00:27:02 across teams. Embedding transparency
+00:27:05 into workflows, communication, and
+00:27:07 culture ensures that AI systems remain
+00:27:10 understandable, accountable, and worthy
+00:27:12 of trust.
+00:27:15 In our previous look at fairness, we
+00:27:17 explored why bias matters and how it can
+00:27:19 emerge in AI systems. Now, let's look at
+00:27:21 how fairness can be put into practice so
+00:27:23 that AI systems can truly serve people
+00:27:26 equitably. Fairness is something you
+00:27:28 have to work on every step of the way.
+00:27:30 Declaring that your system is fair
+00:27:32 without doing the work isn't a shortcut
+00:27:34 to compliance. Think back to
+00:27:36 transparency. Just as documenting
+00:27:38 decisions helps others understand AI
+00:27:40 systems, actively checking for bias
+00:27:43 helps ensure those decisions don't
+00:27:45 disadvantage anyone. The first step is
+00:27:47 noticing where bias might appear. This
+00:27:50 can be subtle. Maybe certain groups are
+00:27:52 under reppresented in training data,
+00:27:54 labels are inconsistent, or algorithm
+00:27:57 choices unintentionally favor one
+00:27:59 outcome over another. Teams can spot
+00:28:01 these patterns through careful analysis,
+00:28:04 such as comparing how the system
+00:28:05 performs across different groups. For
+00:28:07 example, a recruitment tool may seem
+00:28:09 effective overall, but closer
+00:28:11 examination could reveal it
+00:28:13 systematically favors certain genders or
+00:28:15 age ranges. Early detection allows
+00:28:18 organizations to make adjustments before
+00:28:20 the bias affects real people. Mitigation
+00:28:23 naturally follows. If we detect gaps, we
+00:28:26 can rebalance data, refine models, or
+00:28:28 adjust thresholds so that decisions are
+00:28:30 fairer. This must be an ongoing process.
+00:28:33 Just like monitoring ensures reliability
+00:28:36 and safety, ongoing evaluation is
+00:28:38 necessary because real world use can
+00:28:40 reveal new biases that weren't visible
+00:28:42 during testing. Equally important is
+00:28:44 bringing diverse perspectives into the
+00:28:46 process. Including people from different
+00:28:49 backgrounds helps catch blind spots that
+00:28:51 a less diverse team might miss.
+00:28:53 Collaboration across departments
+00:28:55 combined with input from affected
+00:28:57 communities strengthens the fairness of
+00:28:59 the system. Finally, fairness involves
+00:29:02 making difficult trade-offs visible.
+00:29:05 Sometimes improving equity in one area
+00:29:07 may affect performance in another. Clear
+00:29:10 documentation of these decisions shows
+00:29:12 how ethical and legal considerations
+00:29:14 were balanced, reinforcing
+00:29:16 accountability and trust. When fairness
+00:29:18 is properly applied and kept front and
+00:29:20 center, it becomes part of the systems
+00:29:23 DNA. It works to effectively reduce
+00:29:25 harm, but also ensure that AI supports
+00:29:28 human rights and societal values in
+00:29:30 meaningful, measurable ways.
+00:29:33 We've already seen the principles of
+00:29:35 privacy and data governance, consent,
+00:29:38 minimization, and secure handling of
+00:29:40 personal information. Unfortunately,
+00:29:42 this is rarely straightforward in
+00:29:44 practice. AI systems need data to work,
+00:29:47 but too much data or data that's messy
+00:29:49 or sensitive can create problems for
+00:29:52 both people and organizations. Teams
+00:29:54 have to constantly make trade-offs. For
+00:29:56 example, a fitness app might need
+00:29:58 activity data to give useful health
+00:30:00 recommendations, but collecting location
+00:30:02 history could invade privacy. Effective
+00:30:05 governance is about making these
+00:30:06 trade-offs in a thoughtful way. There
+00:30:09 are several practical approaches teams
+00:30:11 use. Anonymization and pseudonymization.
+00:30:14 This works by removing or masking any
+00:30:16 identifying details in data. This
+00:30:19 protects people's privacy, but it can
+00:30:21 make some data less useful for analysis.
+00:30:24 Differential privacy. This technique
+00:30:26 adds a little noise to data sets so that
+00:30:29 individual contributions aren't exposed.
+00:30:32 Models can still learn overall patterns
+00:30:34 safely. Synthetic or federated learning.
+00:30:37 Instead of centralizing real data, these
+00:30:40 methods create artificial data sets or
+00:30:42 train models on devices without moving
+00:30:44 sensitive data around. Even with these
+00:30:47 tools, privacy doesn't happen
+00:30:49 automatically. Teams need to decide
+00:30:51 which techniques to apply, when to audit
+00:30:53 data, and how to balance risk, utility,
+00:30:55 and compliance. Writing down decisions
+00:30:58 and the reasoning behind them makes
+00:31:00 practices reviewable and improvable.
+00:31:02 Privacy also evolves over time. New
+00:31:05 users, changing regulations, or emerging
+00:31:07 threats can change risks. Teams need to
+00:31:10 be aware of these changes. Testing
+00:31:12 scenarios, reviewing logs, and adjusting
+00:31:14 practices so small problems don't grow
+00:31:16 into bigger ones. In practice, privacy
+00:31:19 and data governance are about making
+00:31:21 thoughtful choices every day. It's about
+00:31:23 using the right tools, checking
+00:31:25 assumptions, and staying alert to
+00:31:26 changes the same way we've seen with
+00:31:28 accountability and fairness. When teams
+00:31:31 engage with it this way, privacy becomes
+00:31:33 part of the system itself, protecting
+00:31:35 people while helping everyone trust AI
+00:31:37 tools.
+00:31:39 Earlier, we explored the main security
+00:31:41 risks that AI systems face. Now, let's
+00:31:44 see what this looks like in real world
+00:31:46 systems and how teams handle these
+00:31:48 challenges daytoday. AI systems are
+00:31:50 powerful, but that power can introduce
+00:31:52 new and unique risks. Anything from
+00:31:54 small mistakes to deliberate attacks can
+00:31:56 cause serious problems. Understanding
+00:31:59 these risks helps teams prevent them
+00:32:01 before they affect real people. A big
+00:32:03 challenge comes from data itself. AI
+00:32:06 learns from what it sees. If the data is
+00:32:08 tampered with, whether that's
+00:32:09 intentionally, like an attacker slipping
+00:32:11 in misleading examples, or if that's
+00:32:14 accidental, like poor quality records,
+00:32:16 the system can behave in unexpected
+00:32:18 ways. As an example, a spam filter might
+00:32:21 start letting fishing emails through
+00:32:22 because the training data was subtly
+00:32:24 changed. Checking for anomalies, testing
+00:32:27 data regularly, and keeping clear
+00:32:29 records of where data comes from are
+00:32:31 practical ways to reduce these kinds of
+00:32:33 risks. AI can also be tricked by inputs
+00:32:36 that look normal but produce the wrong
+00:32:37 outcome. Even a small, practically
+00:32:40 invisible change to a training image
+00:32:42 could result in a self-driving car
+00:32:43 misreading a stop sign. Teams manage
+00:32:46 this risk by testing models against
+00:32:48 unusual or tricky scenarios and
+00:32:50 adjusting their systems to handle
+00:32:52 surprises safely. AI systems often hold
+00:32:55 sensitive information. Clever analysis
+00:32:58 of a model could reveal private data.
+00:33:00 Protecting it requires both technical
+00:33:02 measures like encryption or safe
+00:33:04 training methods and careful decisions
+00:33:06 about who can access models and how they
+00:33:08 are shared. Keeping AI systems safe and
+00:33:11 secure depends as much on people as it
+00:33:13 does technology. Teams need to notice
+00:33:15 signs of trouble early, respond quickly,
+00:33:18 and document what they learn. Roles,
+00:33:20 practices, and checks make it easier to
+00:33:22 act before problems grow. Threats
+00:33:25 change, vulnerabilities appear, and
+00:33:27 systems interact with new users and
+00:33:29 environments. Monitoring, testing, and
+00:33:32 learning from incidents are part of the
+00:33:34 ongoing process of keeping AI safe and
+00:33:36 secure.
+00:33:38 Earlier in the course, we introduced the
+00:33:41 three models of oversight. Human in the
+00:33:43 loop, human on the loop, and human in
+00:33:45 command. Now, let's take a closer look
+00:33:47 at how these approaches actually play
+00:33:49 out and why choosing the right one isn't
+00:33:51 always simple. In high-stake situations,
+00:33:54 human in the loop means a person reviews
+00:33:56 and confirms every decision before it
+00:33:58 takes effect. Think of a loan officer
+00:34:01 reviewing an AI's credit approval. This
+00:34:04 model offers strong protection against
+00:34:05 harm, but it comes at a cost. If every
+00:34:08 action requires human approval, systems
+00:34:10 can slow down dramatically and decision
+00:34:12 fatigue can set in. The safeguard itself
+00:34:15 is strong, but it can only work
+00:34:17 effectively if people have the time and
+00:34:19 resources to use it well. Human on the
+00:34:21 loop is more about ongoing supervision
+00:34:23 than individual checks. Instead of
+00:34:25 checking every decision, people watch
+00:34:28 the systems behavior and step in if
+00:34:30 something looks off. For example, a
+00:34:32 technician might supervise industrial
+00:34:34 robots and intervene if they begin
+00:34:36 acting in unsafe ways. The challenge is
+00:34:38 keeping humans engaged. If the oversight
+00:34:41 is too passive, problems might go
+00:34:43 unnoticed until it's too late. Human in
+00:34:46 command pulls back even further,
+00:34:47 focusing on the system as a whole. Here,
+00:34:50 people set boundaries rather than
+00:34:52 managing individual outputs. This means
+00:34:54 outlining what the AI is allowed to do,
+00:34:56 when it should stop, and what its
+00:34:58 intended goals are. This model is
+00:35:00 especially important in areas like
+00:35:02 government and law enforcement, where
+00:35:04 the public expects important decisions
+00:35:06 to be placed firmly in human hands. The
+00:35:09 broad scope of this approach is both its
+00:35:11 strength and its weakness. It allows for
+00:35:13 an AI system to be as efficient as
+00:35:15 possible within safe bounds. But if
+00:35:17 those boundaries aren't properly
+00:35:19 defined, it can lead to systems falling
+00:35:21 far out of alignment and becoming more
+00:35:23 of a problem than a solution. Each model
+00:35:25 has both strengths and weaknesses. Too
+00:35:28 much oversight can make systems slow or
+00:35:30 ineffective. Too little and risks can
+00:35:32 slip through unnoticed. The right
+00:35:34 balance depends on context, risk, and
+00:35:37 regulation. Our job is to find that
+00:35:39 balance.
+00:35:41 Let's now revisit sustainability and dig
+00:35:44 deeper into what that means in practice.
+00:35:46 AI has real potential to support climate
+00:35:48 goals. Whether that's optimizing energy
+00:35:51 use in buildings, improving farming
+00:35:53 efficiency, or helping supply chains
+00:35:55 reduce waste. But running AI systems
+00:35:58 comes with costs of its own. Training
+00:36:00 and deploying large models can consume
+00:36:02 huge amounts of electricity, especially
+00:36:05 if data centers rely on non-renewable
+00:36:07 energy. Governance frameworks ask
+00:36:10 organizations to balance these benefits
+00:36:12 and costs and to make those trade-offs
+00:36:14 transparent. One way to do this is by
+00:36:17 looking closely at efficiency. Do we
+00:36:19 really need a massive generalpurpose
+00:36:21 model when a smaller targeted one would
+00:36:23 do the job just as well? Techniques like
+00:36:25 pruning and quantization can slim models
+00:36:27 down, cutting their energy usage without
+00:36:30 losing out on accuracy. Choosing a
+00:36:32 domain specific model can also mean less
+00:36:34 computing power, easier maintenance, and
+00:36:37 lower costs over time. It also means
+00:36:39 thinking about sustainability, which
+00:36:41 means looking at the full life cycle.
+00:36:43 Hardware wears out, software becomes
+00:36:45 outdated, and models need retraining.
+00:36:48 Responsible governance means preparing
+00:36:49 for those stages, extending the life of
+00:36:52 infrastructure, finding ways to update
+00:36:54 models without full retraining, and
+00:36:57 responsibly recycling or decommissioning
+00:36:59 equipment when it's no longer usable.
+00:37:01 Visibility is just as important here as
+00:37:03 in accountability or fairness. If an
+00:37:06 organization discloses the environmental
+00:37:08 impact of its AI systems, whether that's
+00:37:11 through audits, public reports, or by
+00:37:13 following voluntary standards, it makes
+00:37:16 the costs visible. That visibility
+00:37:18 builds trust and allows both regulators
+00:37:20 and the public to weigh in on whether
+00:37:22 those trade-offs are acceptable. In
+00:37:24 practice, sustainability is about making
+00:37:27 careful, informed choices at each stage.
+00:37:29 Choices that show that AI's benefits are
+00:37:31 worth its costs, both for businesses and
+00:37:34 for the planet.
+00:37:36 So far, we've looked at how principles
+00:37:38 like accountability, fairness, and
+00:37:40 privacy show up in practice. But
+00:37:43 principles alone don't keep systems on
+00:37:45 track. Once an AI system is deployed,
+00:37:48 the real test is whether it stays
+00:37:49 reliable and responsible over time.
+00:37:52 That's where monitoring frameworks come
+00:37:53 in. A monitoring framework turns broad
+00:37:56 goals into practical realities. Instead
+00:37:59 of saying the model should be fair,
+00:38:01 teams decide what fairness looks like in
+00:38:03 numbers or thresholds and set up alerts
+00:38:06 if performance slips. The same goes for
+00:38:08 accuracy, privacy, or any other
+00:38:10 principle. This makes it possible to
+00:38:12 spot problems early rather than after
+00:38:15 they begin to cause harm. Good
+00:38:17 monitoring is a mix of automated tools
+00:38:19 that watch for issues like data drift or
+00:38:22 unusual outputs and people who can
+00:38:24 interpret what those signals actually
+00:38:26 mean. That balance matters. An alert
+00:38:28 only builds trust if someone with the
+00:38:30 right knowledge and expertise can
+00:38:32 explain it and decide what to do next.
+00:38:34 Monitoring also creates a record of
+00:38:37 responsibility. Logs of updates,
+00:38:39 incidents, and decisions form an audit
+00:38:41 trail that regulators, auditors, or even
+00:38:44 the public can review. These trails act
+00:38:46 as proof that governance is being
+00:38:48 treated as an ongoing process. Finally,
+00:38:51 frameworks like ISOC 4201 or the NIST AI
+00:38:55 risk management framework highlight the
+00:38:57 importance of monitoring being
+00:38:58 adaptable. An AI system that works well
+00:39:01 today might behave differently as new
+00:39:03 data comes in, as people use it in
+00:39:05 unexpected ways or as regulations
+00:39:07 change. A good monitoring framework sets
+00:39:10 rules that can be reviewed, updated, and
+00:39:12 improved whenever the need arises. This
+00:39:15 brings us to the next stage of the
+00:39:16 course. We've seen how principles play
+00:39:19 out in practice. Now, we're going to
+00:39:21 look at how standards and frameworks
+00:39:22 formalize those practices, making
+00:39:25 governance consistent across both
+00:39:26 internal teams and industries.
+00:39:30 OECD AI principles. The OECD AAI
+00:39:33 principles are one of the most widely
+00:39:35 used reference points for AI governance.
+00:39:38 Many later frameworks build on them. So
+00:39:40 understanding what they mean in practice
+00:39:41 is a great place to start. The
+00:39:43 principles are inclusive growth and
+00:39:45 well-being. This means AI should bring
+00:39:48 benefits that reach beyond a small
+00:39:49 group. For example, optimizing public
+00:39:52 transport with AI improves the daily
+00:39:54 life for a whole city instead of just a
+00:39:57 few corporate executives. Human-
+00:39:59 centered values and fairness systems
+00:40:01 should respect individuals rights and
+00:40:03 avoid discrimination. In practice, this
+00:40:06 is where fairness testing and bias
+00:40:08 checks become important. Transparency
+00:40:10 and explanability. This means people
+00:40:13 need to know how AI systems reach their
+00:40:15 results and have a way to question them.
+00:40:17 This doesn't always mean showing code,
+00:40:19 but it does mean documenting decisions
+00:40:21 clearly. Robustness, security, and
+00:40:24 safety. AI has to be reliable in real
+00:40:27 world conditions. That includes
+00:40:29 resisting attacks and performing
+00:40:31 consistently in critical areas like
+00:40:33 healthcare. Accountability. Someone
+00:40:35 needs to be responsible for AI's
+00:40:37 outcomes. That's why governance
+00:40:39 frameworks assign clear roles like model
+00:40:42 owners or risk officers. As you can
+00:40:45 probably see, the OECD is a sort of
+00:40:47 backbone for effective AI governance. It
+00:40:50 covers many of the principles we've
+00:40:51 already looked at in this course. What
+00:40:54 matters here is less the list itself and
+00:40:56 more how it's used. These principles are
+00:40:58 often used as a baseline checklist, a
+00:41:01 starting point to compare organizational
+00:41:03 practices against. Because newer
+00:41:05 standards like the EU AI act and ISO
+00:41:08 4201 echo the same ideas, being
+00:41:11 knowledgeable of the OECD principles
+00:41:13 gives you an advantage when it comes to
+00:41:15 aligning with new standards and
+00:41:16 regulations.
+00:41:18 UNESCO's ethics recommendation. UNESCO's
+00:41:22 ethics recommendation stands as a global
+00:41:24 ethics lens for AI. It's important
+00:41:26 because it highlights issues that often
+00:41:28 sit in the background into everyday
+00:41:30 design and decision-m. The
+00:41:32 recommendation covers human dignity and
+00:41:35 rights, which means AI should protect
+00:41:38 basic freedoms like privacy, equality,
+00:41:40 and freedom of expression. In practice,
+00:41:43 this means giving people clear ways to
+00:41:45 understand, question, and contest
+00:41:46 outcomes that affect them. Environmental
+00:41:49 sustainability. AI should minimize its
+00:41:52 footprint and support climate goals.
+00:41:54 This is linked to what we covered on
+00:41:56 sustainability. Choose right-sized
+00:41:58 models, disclose impacts, and plan for
+00:42:00 the full life cycle. Cultural diversity.
+00:42:03 AI must respect local context and avoid
+00:42:06 reinforcing stereotypes. Speech or
+00:42:09 vision models should be checked against
+00:42:11 dialects, names, and dress that reflect
+00:42:13 the communities they serve. Content
+00:42:15 rules should account for cultural nuance
+00:42:17 rather than copypasting a single policy
+00:42:19 globally. Inclusive and equitable
+00:42:22 benefit. This means AI should serve
+00:42:24 everyone, not just the most visible
+00:42:26 users. That means testing for who is
+00:42:28 left out and adjusting data and design
+00:42:31 so they are properly represented. Great
+00:42:33 examples of this are older adults in a
+00:42:35 health app or low connectivity users in
+00:42:37 a public service. As with the OECD, the
+00:42:41 value of UNESCO's recommendation is in
+00:42:43 how you use it. Think of it like a lens
+00:42:45 you hold up to your work. Before
+00:42:47 launching, pause and think whose norms
+00:42:50 are reflected here, who's missing, and
+00:42:52 what would harm look like in this
+00:42:53 context. If you can, invite a few voices
+00:42:56 from the communities affected and give
+00:42:58 an independent reviewer the authority to
+00:43:00 slow things down if concerns aren't
+00:43:02 resolved. It also helps to give basic
+00:43:04 ethics training across teams so that
+00:43:06 everyone is speaking the same language.
+00:43:08 Used alongside the OECD principles,
+00:43:11 UNESCO keeps culture, dignity,
+00:43:13 inclusion, and environmental impact in
+00:43:15 view. It doesn't replace technical
+00:43:17 checks. It just rounds them out. Using
+00:43:20 these tools properly means choices you
+00:43:22 can explain and decisions you can stand
+00:43:24 behind in different places in context.
+00:43:28 The European Union Artificial
+00:43:30 Intelligence Act. We've already
+00:43:32 introduced the EU AI act earlier in the
+00:43:35 course. Rather than listing risk
+00:43:37 categories, let's look at how it shows
+00:43:39 up in day-to-day work. The EU AI Act
+00:43:42 draws a simple line between people who
+00:43:44 build AI and people who use it. If you
+00:43:46 build or place an AI system on the
+00:43:48 European market, you're expected to
+00:43:50 design with governance in mind. Think
+00:43:52 through risks before release. Document
+00:43:54 how the system works and what data it
+00:43:56 relies on. Make space for human
+00:43:58 oversight and keep records. If you use
+00:44:01 AI in your own operations, the
+00:44:02 expectations are different. Use it as
+00:44:05 intended. Train the people who rely on
+00:44:06 it. Keep the right logs. Watch
+00:44:08 performance. And step in when something
+00:44:10 looks off. We've met all these ideas
+00:44:12 already in accountability, transparency,
+00:44:14 and monitoring. They're just becoming
+00:44:16 legal expectations in this context. Risk
+00:44:19 level sets how much evidence you need.
+00:44:21 Some uses are banned altogether. Others
+00:44:24 count as high risk. For example,
+00:44:26 decisions about jobs, education, or
+00:44:28 access to essential services. For high-
+00:44:31 risk uses, the bar is higher. clearer
+00:44:34 documentation, a defined path for
+00:44:36 oversight, and checks that continue
+00:44:37 after launch. Lower risk users still
+00:44:40 benefit from the same habits, just with
+00:44:42 a lighter touch. There's one practical
+00:44:44 note worth mentioning. If you take a
+00:44:46 model and change what it's used for, for
+00:44:49 example, you adapt a vendor's tool and
+00:44:51 use it in a new decision that affects
+00:44:52 people, you can slide from user toward
+00:44:55 builder, and the duties shift with you.
+00:44:58 version control, change logs, and a
+00:45:00 plain English statement of intent can
+00:45:02 help you avoid that. After launch, the
+00:45:04 ACT expects systems to be watched in the
+00:45:06 real world. That fits the monitoring
+00:45:08 approach we've been building. Decide
+00:45:10 what good looks like. Look out for when
+00:45:12 things drift. Act early and record what
+00:45:14 you did. If something serious happens,
+00:45:17 then you're expected to report them. The
+00:45:19 groundwork you laid earlier, roles,
+00:45:21 logs, incident playbooks will make that
+00:45:23 more manageable. To effectively work
+00:45:25 within the EU AI act, you need three
+00:45:28 things we've already covered in this
+00:45:29 course. Be clear about your role. Be
+00:45:31 honest about the risk of the use case
+00:45:33 and keep evidence of how your governance
+00:45:35 works in practice. That's what
+00:45:37 regulators will be looking for.
+00:45:40 The ISO 4201 standard. We've already
+00:45:44 mentioned ISO 4201 before. So rather
+00:45:48 than define it again, let's look at how
+00:45:50 it applies to a day-to-day context. If
+00:45:52 the EUI Act sets the legal bar, ISO 4201
+00:45:56 gives you a practical way to reach that
+00:45:58 bar. Think of it as an amalgamation of
+00:46:00 the habits we've been building,
+00:46:02 accountability, fairness, privacy,
+00:46:04 safety, and monitoring brought together
+00:46:07 as something called an AI management
+00:46:08 system or a IMS. In practice, an A IM
+00:46:12 starts with scope and purpose. You
+00:46:14 decide which AI systems are covered, why
+00:46:16 they exist, and who is responsible for
+00:46:18 them. Write that down in plain language.
+00:46:21 Keep an inventory of models and data
+00:46:23 sets with named owners. Link each use
+00:46:25 case to a simple risk register and an
+00:46:28 oversight path so it's clear who gets
+00:46:29 involved and when. ISO 4201 runs as a
+00:46:33 loop rather than a one-off. You plan the
+00:46:36 controls that fit the risk. You build
+00:46:38 and operate to those controls. You check
+00:46:40 what actually happened through
+00:46:41 monitoring, audits, and incident
+00:46:43 reviews. And then you adjust based on
+00:46:45 what you learned. It's the same rhythm
+00:46:47 we've used already for accountability
+00:46:49 and continuous monitoring, just made
+00:46:51 explicit and repeatable. Two ideas
+00:46:54 matter here. First, proportionality. Not
+00:46:57 every system needs the same weight of
+00:46:59 governance. A low impact assistant can
+00:47:02 run on lighter checks. A hiring model or
+00:47:04 anything safety critical needs tighter
+00:47:06 ones. Second, evidence. policies,
+00:47:09 training records, test results,
+00:47:11 approvals, monitoring snapshots, and
+00:47:13 post incident notes show that your
+00:47:15 process is real and not just for show.
+00:47:17 If you're already experienced with
+00:47:19 something like ISO 27,01 or ISO 90,0001,
+00:47:23 then ISO 420,0001 will feel familiar.
+00:47:26 You can reuse the structure you have,
+00:47:29 management reviews, corrective actions,
+00:47:31 supplier oversight, and plug AI specific
+00:47:34 pieces into it, such as model
+00:47:35 inventories, bias testing, and human
+00:47:37 oversight steps. To get the most out of
+00:47:40 ISO 42,0001, be clear about what's being
+00:47:43 covered. Match your controls to the risk
+00:47:45 and keep the proof fresh.
+00:47:48 The NIST AI risk management framework.
+00:47:51 The NIST AI risk management framework
+00:47:53 sits neatly inside the loop that ISO
+00:47:55 4201 provides. It doesn't set laws. It
+00:47:59 gives you a practical way to think
+00:48:00 through risk as you plan, build, test,
+00:48:03 ship, and maintain an AI system. NIST
+00:48:05 breaks the work into four habits you can
+00:48:07 keep returning to whenever you need
+00:48:09 them. Govern, map, measure, and manage.
+00:48:12 Let's explore them now. Start with
+00:48:14 govern. This is the scaffolding. the
+00:48:17 roles, policies, and routines that make
+00:48:19 risk work visible. In practice, that
+00:48:22 means naming owners for each model,
+00:48:24 keeping a short plain English policy for
+00:48:26 how AI is used, and making sure incident
+00:48:29 playbooks and escalation paths are known
+00:48:31 before anything goes live. It runs on
+00:48:34 the same steps of accountability that
+00:48:35 we've covered throughout this course.
+00:48:37 Clear responsibility, documented
+00:48:39 decisions, and room for human oversight.
+00:48:42 MAP is about context. Before you train
+00:48:45 or deploy your AI, write down what the
+00:48:46 system is for, who it affects, where it
+00:48:49 could cause harm, and how it might be
+00:48:51 misused. A one-page statement of intent,
+00:48:54 a quick context diagram, and a list of
+00:48:56 affected groups will do more for risk
+00:48:58 than a dozen slide decks. This is also
+00:49:01 where you flag sensitive data
+00:49:03 constraints from laws or policies, and
+00:49:05 any assumptions the system depends on.
+00:49:07 Measure turns those assumptions into
+00:49:09 checks. Build small evaluation sets that
+00:49:12 reflect real use. Track basic
+00:49:14 performance, but also fairness,
+00:49:16 robustness to odd inputs, and privacy
+00:49:18 risks wherever relevant. If you're using
+00:49:21 explanability techniques like the lime
+00:49:22 and shap tools we discussed earlier,
+00:49:24 make a note of what they show and where
+00:49:26 they fall short. We're aiming for an
+00:49:28 honest picture that you can act on, not
+00:49:30 top marks. Manage is what you do with
+00:49:32 that picture. Put risks in a simple
+00:49:35 register. Decide what gets fixed now and
+00:49:37 what needs deeper work. Assign owners
+00:49:40 and set thresholds that trigger action
+00:49:42 after launch. This is also where we
+00:49:44 apply monitoring techniques. Define what
+00:49:46 healthy looks like. Watch for drift and
+00:49:48 keep a short record of updates,
+00:49:50 incidents, and what you learned. When
+00:49:52 something goes wrong, the same loop
+00:49:54 applies. Capture it, fix it, and fold
+00:49:56 the lesson back into govern and map. If
+00:49:58 ISO 4201 gives you the operating system
+00:50:01 for AI management, then NIST gives you
+00:50:04 the day-to-day guidance for risk. When
+00:50:06 used together, they keep you organized
+00:50:08 and honest. clear scope, clear roles,
+00:50:10 real world checks, and adjustments you
+00:50:12 can show if you're asked how your AI is
+00:50:14 being governed.
+00:50:16 Now that we've covered the principles
+00:50:18 and looked at the frameworks and
+00:50:20 standards will be working alongside,
+00:50:22 let's see how they come together in a
+00:50:23 real world scenario. Imagine a team
+00:50:26 introducing an AI assisted screening
+00:50:28 tool that helps route job applications
+00:50:30 to the right reviewer. We start by
+00:50:32 writing one sentence of intent. what the
+00:50:35 tool does, who it serves, and what
+00:50:38 decisions it will never be allowed to
+00:50:39 make on its own. That sentence is the
+00:50:41 anchor for everything else. Next, we
+00:50:44 make responsibility visible. One person
+00:50:46 owns the model, one owns the data, and
+00:50:48 one owns risk. Their names go on the
+00:50:50 page so that questions have a place to
+00:50:52 go. Then, oversight. For routine cases,
+00:50:55 the tool can suggest a route. For less
+00:50:58 common cases, a human approves decisions
+00:51:00 before anything moves forward. This is
+00:51:03 written into the workflow, not left to
+00:51:05 habit. Before launch, we test with our
+00:51:07 own data, not just a demo set. We check
+00:51:10 accuracy and look for fairness gaps that
+00:51:12 matter in this context. If we find one,
+00:51:14 we adjust by rebalancing data and
+00:51:16 tweaking thresholds. Then we keep a note
+00:51:18 of what we changed and why. We also
+00:51:21 decide what we're willing to explain. A
+00:51:23 short, plain English summary tells
+00:51:25 people which factors influenced a result
+00:51:27 and how to request a review. The full
+00:51:30 technical detail lives in the
+00:51:32 documentation for auditors and
+00:51:33 engineers. After going live, we watch a
+00:51:36 small set of signals, performance on
+00:51:38 real cases, any widening gaps between
+00:51:40 groups, unusual spikes and errors, and
+00:51:43 how often humans override the AI.
+00:51:45 Something drifts, we act early and
+00:51:47 record what we did. Finally, we keep a
+00:51:49 small folder of evidence. The intent
+00:51:52 statement, the data sources, test
+00:51:54 results, the explanation template, and
+00:51:56 the incident playbook. Nothing fancy,
+00:51:58 just enough to show how decisions were
+00:52:00 made and who made them. That's the same
+00:52:02 pattern you've seen throughout this
+00:52:04 course. Be clear about purpose. Make
+00:52:06 roles explicit. Choose an oversight
+00:52:08 model that fits the risk. Test for the
+00:52:10 harms that matter here. Explain what you
+00:52:12 can and keep watching after launch.
+00:52:16 Now that we've reached the conclusion of
+00:52:17 the course, we've covered the ground you
+00:52:19 need to start working with AI in a
+00:52:21 responsible way. You've seen how the
+00:52:23 principles fit together. accountability,
+00:52:26 transparency, fairness, privacy, safety,
+00:52:29 human oversight, sustainability, and
+00:52:31 ongoing monitoring, and how they show up
+00:52:33 in everyday decisions. You've also met
+00:52:36 the frameworks you'll work alongside in
+00:52:38 practice. The OECD and UNESCO guidance,
+00:52:41 the EUAI act, the ISO IEC 4201 standard,
+00:52:46 and the NIST artificial intelligence
+00:52:47 risk management framework. When you take
+00:52:50 this back to your own work, return to
+00:52:52 the simple pattern we've used
+00:52:53 throughout. Begin with a one-s sentence
+00:52:55 intent for any AI tool. Make roles
+00:52:58 visible so questions have a place to go.
+00:53:00 Choose an oversight approach that fits
+00:53:02 the risk. Test for the harm that matters
+00:53:05 in your context. Explain what you
+00:53:07 reasonably can and stay vigilant after
+00:53:09 launch that loop. Decide, document,
+00:53:13 check, adjust. Is governance at work? If
+00:53:16 you want a quick exercise to put this
+00:53:18 into practice, pick one AI system and
+00:53:20 try three small steps. Write the intent
+00:53:23 sentence. Name who owns the model, data,
+00:53:25 and risk, and choose two signals you'll
+00:53:27 monitor after deployment. Keep those
+00:53:29 notes together. They'll become the start
+00:53:32 of your evidence and your improvement
+00:53:34 plan. If any concepts feel new, you can
+00:53:36 revisit the earlier parts of this course
+00:53:38 or go back to our first course, AI
+00:53:41 governance fundamentals, for a broader
+00:53:43 walkthrough of the basics before
+00:53:44 returning here.
+00:53:47 We'd like to thank you for your time and
+00:53:49 we hope this course has been helpful in
+00:53:51 your journey into AI governance. Feel
+00:53:53 free to check out more of our resources
+00:53:55 or keep up to date with our blogs at
+00:53:57 safehield.cloud. Cloud.
