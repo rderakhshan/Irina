@@ -33,10 +33,13 @@ class CoreSuiteTests(unittest.TestCase):
                 "DS06",
                 "DS07",
                 "DS08",
+                "DS09",
                 "DS10",
                 "DS11",
                 "DS12",
+                "DS13",
                 "DS14",
+                "DS15",
             },
         )
 

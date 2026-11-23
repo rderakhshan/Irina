@@ -20,17 +20,47 @@ from .runners import run_core_suite
 from .worlds import WorldFactory
 
 
+def _run_l2(cases):
+    from .checks import check_ds01
+    from .runners.harness_runner import run_scripted
+    from .runners.reference import SuiteResult
+
+    outcomes = []
+    for case in cases:
+        answer = str(case.expected.get("answer") or "")
+        run = run_scripted(case.inputs["question"], answer)
+        abstained = not answer.strip() and not run.answer.strip()
+        outcomes.append(
+            check_ds01(case, run.answer, abstained=abstained)
+        )
+    return SuiteResult(
+        outcomes=outcomes,
+        integration_level="L2_irina_integrated",
+        world_id=cases[0].world_id if cases else "",
+        dataset_version=cases[0].dataset_version if cases else "",
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run Irina's offline core evaluation")
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--out", default="reports/core")
     parser.add_argument("--opik", action="store_true", help="mirror results to local Opik")
+    parser.add_argument(
+        "--l2",
+        action="store_true",
+        help="run DS01 through the real Harness with a scripted model",
+    )
     args = parser.parse_args(argv)
 
     world = WorldFactory().build(seed=args.seed)
     grouped = build_core_datasets(world)
     cases = flatten_datasets(grouped)
-    result = run_core_suite(world, cases)
+    if args.l2:
+        cases = [case for case in cases if case.family_id == "DS01"]
+        result = _run_l2(cases)
+    else:
+        result = run_core_suite(world, cases)
 
     json_path, md_path = write_report(
         result, world_manifest=world.manifest, output_dir=args.out

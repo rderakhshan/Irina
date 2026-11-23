@@ -65,6 +65,28 @@ checkpoints:
       - src/back/harness/orchestration/cli.py
       - src/back/harness/providers/deepseek.py
     tests: "python -m unittest tests.test_run_tracing tests.test_deepseek"
+  C3g_extended_suites:
+    status: verified
+    artifacts:
+      - src/back/evaluations/checks/extended.py
+      - src/back/evaluations/datasets/catalog.py
+    tests: "python -m unittest tests.test_eval_suite tests.test_eval_extended"
+  C3h_opik_suites:
+    status: verified
+    artifacts:
+      - src/back/evaluations/opik_adapter/suites.py
+      - src/back/evaluations/run_suites.py
+    evidence: "15 Opik test suites created with items"
+  C3i_l2_experiments:
+    status: verified
+    artifacts: [src/back/evaluations/run_core.py]
+    tests: "run_core --l2 (4/4 cases)"
+  C3j_benchmarks_calibration_helpers:
+    status: verified
+    artifacts:
+      - src/back/evaluations/benchmarks
+      - src/back/evaluations/calibration
+    tests: "python -m unittest tests.test_eval_extended"
 
 blocked:
   - id: human_calibration
@@ -85,9 +107,6 @@ blocked:
     reason: No pinned local benchmark cache or license verification
 
 next_tasks:
-  - DS09 injection/privacy suite
-  - DS13 resilience suite
-  - DS15 full telemetry suite
   - DS14 human calibration and judge agreement report
   - DS16 optional benchmark lane
   - OpenTelemetry export (deferred)

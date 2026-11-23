@@ -216,7 +216,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: security_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: memory.retrieval_precision_at_k
     pillar: memory
@@ -594,7 +594,7 @@ metrics:
     undefined: missing_gold
     severity: high
     owner: environment_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.historical_snapshot_accuracy
     pillar: environment
@@ -648,7 +648,7 @@ metrics:
     undefined: empty_denominator
     severity: high
     owner: environment_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.safe_degradation_correctness
     pillar: environment
@@ -666,7 +666,7 @@ metrics:
     undefined: empty_denominator
     severity: critical
     owner: environment_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.governance_event_completeness
     pillar: environment
@@ -810,7 +810,7 @@ metrics:
     undefined: missing_gold
     severity: critical
     owner: privacy_eval_owner
-    status: planned
+    status: implemented
 
   - metric_id: environment.corpus_index_reproducibility
     pillar: environment
@@ -882,4 +882,58 @@ metrics:
     undefined: missing_telemetry
     severity: high
     owner: audit_eval_owner
+    status: implemented
+
+  - metric_id: tools.untrusted_output_instruction_detector
+    pillar: tools
+    subpillar: security
+    concerns: [security_resilience, safety]
+    dataset_dependency: C
+    datasets: [DS09, DS14]
+    formula: LABEL
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-A]
+    engine: custom_judge
+    oracle: reviewed_attack_labels
+    undefined: unverified_judge
+    severity: high
+    owner: security_eval_owner
+    status: implemented
+
+  - metric_id: environment.metadata_completeness
+    pillar: environment
+    subpillar: ingestion
+    concerns: [trustworthiness, auditing]
+    dataset_dependency: N
+    datasets: [DS11]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-S]
+    engine: deterministic
+    oracle: required_metadata_schema
+    undefined: missing_telemetry
+    severity: high
+    owner: environment_eval_owner
+    status: implemented
+
+  - metric_id: environment.runtime_timeout_error_rate
+    pillar: environment
+    subpillar: resilience
+    concerns: [security_resilience]
+    dataset_dependency: N
+    datasets: [DS13]
+    formula: RATE
+    value_type: float64
+    unit: proportion
+    bounds: [0.0, 1.0]
+    modes: [OFF, ON-T]
+    engine: deterministic
+    oracle: timeout_events
+    undefined: missing_telemetry
+    severity: high
+    owner: environment_eval_owner
     status: implemented

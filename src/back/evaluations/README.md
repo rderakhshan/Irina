@@ -475,7 +475,7 @@ release_gate: {enabled: false, threshold: null, owner: null}
 | `llm.numeric_exact_accuracy` | llm | RATE | D | DS04 | implemented |
 | `llm.refusal_escalation_correctness` | llm | RATE | D | DS05 | implemented |
 | `llm.required_disclosure_presence` | llm | BINARY | N | DS05 | planned |
-| `llm.prompt_injection_success_rate` | llm | RATE | D | DS09 | planned |
+| `llm.prompt_injection_success_rate` | llm | RATE | D | DS09 | implemented |
 | `memory.retrieval_precision_at_k` | memory | P_AT_K | D | DS07 | implemented |
 | `memory.retrieval_recall_at_k` | memory | R_AT_K | D | DS07 | implemented |
 | `memory.retrieval_mrr` | memory | MRR | D | DS07 | implemented |
@@ -496,11 +496,11 @@ release_gate: {enabled: false, threshold: null, owner: null}
 | `tools.retrieval_ndcg` | tools | NDCG | D | DS02 | implemented |
 | `tools.lookahead_violation_count` | tools | COUNT | N | DS12 | implemented |
 | `environment.extraction_field_accuracy` | environment | RATE | D | DS11 | implemented |
-| `environment.index_coverage` | environment | RATE | D | DS11 | planned |
+| `environment.index_coverage` | environment | RATE | D | DS11 | implemented |
 | `environment.historical_snapshot_accuracy` | environment | RATE | D | DS12 | implemented |
 | `environment.availability_violation_count` | environment | COUNT | N | DS12 | planned |
-| `environment.fault_recovery_rate` | environment | RATE | D | DS13 | planned |
-| `environment.safe_degradation_correctness` | environment | RATE | D | DS13 | planned |
+| `environment.fault_recovery_rate` | environment | RATE | D | DS13 | implemented |
+| `environment.safe_degradation_correctness` | environment | RATE | D | DS13 | implemented |
 | `environment.governance_event_completeness` | environment | RATE | N | DS15 | implemented |
 | `environment.trace_correlation_rate` | environment | LABEL | N | DS15 | implemented |
 | `calibration.judge_precision` | llm | PRECISION | D | DS14 | implemented |
@@ -508,11 +508,14 @@ release_gate: {enabled: false, threshold: null, owner: null}
 | `calibration.judge_fnr` | llm | FNR | D | DS14 | implemented |
 | `calibration.agreement_rate` | llm | ACCURACY | D | DS14 | implemented |
 | `llm.bias_judge` | llm | JUDGE | C | DS10, DS14 | planned |
-| `environment.pii_redaction_detection_accuracy` | environment | RATE | D | DS09, DS14 | planned |
+| `environment.pii_redaction_detection_accuracy` | environment | RATE | D | DS09, DS14 | implemented |
 | `environment.corpus_index_reproducibility` | environment | HASH | N | DS12 | planned |
 | `llm.contradicted_claim_rate` | llm | RATE | C | DS03, DS14 | implemented |
 | `llm.fairness_pair_disparity` | llm | PAIR | D | DS10 | implemented |
 | `environment.evidence_integrity_version_binding` | environment | HASH | N | DS15 | implemented |
+| `tools.untrusted_output_instruction_detector` | tools | LABEL | C | DS09, DS14 | implemented |
+| `environment.metadata_completeness` | environment | RATE | N | DS11 | implemented |
+| `environment.runtime_timeout_error_rate` | environment | RATE | N | DS13 | implemented |
 
 ### v9 crosswalk by pillar
 
@@ -552,6 +555,8 @@ release_gate: {enabled: false, threshold: null, owner: null}
 ```powershell
 uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core
 uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --opik
+uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --l2
+uv run python -m src.back.evaluations.run_suites --seed 7
 
 $env:IRINA_MEMORY_ENABLED="0"
 uv run python -m unittest tests.test_eval_metrics tests.test_eval_world `
@@ -581,13 +586,13 @@ uploads `reports/core` as an artifact.
 | DS06 | Tool choice/trajectory | acceptable tool sets, args, partial order, effects | implemented (fixture) |
 | DS07 | Memory retrieval | relevant memory IDs, graded relevance, access scope | implemented (fixture) |
 | DS08 | Memory lifecycle | state reducer, must-retain facts, invalidations | implemented (fixture) |
-| DS09 | Injection/adversarial | attack objective, forbidden effect, canary ledger | planned |
+| DS09 | Injection/adversarial | attack objective, forbidden effect, canary ledger | implemented |
 | DS10 | Fairness paired | matched pairs, justified invariance, human labels | implemented |
 | DS11 | Ingestion/index | canonical fields, headers, units, chunk membership | implemented (core) |
 | DS12 | Temporal RAG | availability semantics, snapshots, exclusions | implemented (core) |
-| DS13 | Resilience/security | faults, expected recovery/denial, forbidden effects | planned |
+| DS13 | Resilience/security | faults, expected recovery/denial, forbidden effects | implemented |
 | DS14 | Judge calibration | synthetic labels now; human adjudication pending | implemented (synthetic) |
-| DS15 | Runtime telemetry | event manifest, trace IDs, hashes | helpers implemented |
+| DS15 | Runtime telemetry | event manifest, trace IDs, hashes | implemented |
 | DS16 | Benchmark cache | pinned benchmark assets and scorer | blocked/optional |
 
 ### Promotion pipeline
@@ -723,6 +728,7 @@ OS/library internals, CLI startup/banner/shutdown.
 | Runtime per-pillar traces/spans | implemented |
 | Dataset attempt (`irina-core-<version>`) | best-effort |
 | Experiments | implemented (local) |
+| Test suites | implemented (create/insert verified; run requires judge model) |
 | Feedback scores / dashboard metric columns | implemented via log_traces_feedback_scores |
 | Online evaluation/guardrails/alerts | deployment-gated, not verified |
 | DeepEval metrics/benchmarks | not installed/verified |
@@ -774,17 +780,18 @@ gates and are never averaged away. No single governance score is published.
 
 ### Implemented
 
-- 49 registered metrics; 37 implemented.
+- 52 registered metrics; 45 implemented.
 - Metric value/math contract and boundary tests.
 - Contracts and evidence levels.
 - Deterministic world, finance/retrieval/temporal/memory/policy/effect oracles.
-- DS01, DS02, DS03, DS04, DS05, DS06, DS07, DS08, DS10, DS11 (core), DS12 (core), DS14 (fixture).
-- Core suite: **28 cases**, 28 pass, L1 reference.
+- DS01, DS02, DS03, DS04, DS05, DS06, DS07, DS08, DS09, DS10, DS11 (core), DS12 (core), DS13, DS14 (fixture), DS15.
+- Core suite: **32 cases**, 32 pass, L1 reference.
 - L2 Harness run with scripted model.
 - Reports, coverage, runtime spans, local Opik traces.
 - Approval/memory/audit/fairness/claim/tool/calibration checks.
 - Opik experiments + per-item feedback scores (verified locally).
 - CLI lifecycle trace and provider retry-attempt spans (DeepSeek).
+- Opik Test Suites (15 suites created and visible locally).
 
 ### Partial
 
@@ -793,11 +800,10 @@ gates and are never averaged away. No single governance score is published.
 - DS11 ingestion: core extraction only.
 - DS12 temporal: core cases.
 - DS14 calibration: synthetic labels only, not human adjudication.
-- DS15 audit: helpers, not a full telemetry suite.
 
 ### Blocked / planned
 
-- DS09 injection, DS13 resilience, DS16 benchmarks.
+- DS16 benchmarks (local assets/license required).
 - Real policy gate, approval identity/workflow, retention, tenancy.
 - DeepEval adapters, benchmark lane, online evaluation.
 

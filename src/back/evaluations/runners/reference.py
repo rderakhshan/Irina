@@ -21,6 +21,12 @@ from ..checks.core import (
 )
 from ..checks.claims import Claim
 from ..datasets.catalog import EvalCase
+from ..checks.extended import (
+    check_ds09,
+    check_ds13,
+    check_ds15,
+    check_ingestion,
+)
 from ..checks.advanced import (
     check_calibration,
     check_ds06,
@@ -94,6 +100,12 @@ class ReferenceResponder:
             return self._ds08(case)
         if family == "DS14":
             return self._ds14(case)
+        if family == "DS09":
+            return self._ds09(case)
+        if family == "DS13":
+            return self._ds13(case)
+        if family == "DS15":
+            return self._ds15(case)
         raise ValueError(f"unsupported dataset family {family!r}")
 
     def _company(self, ticker: str):
@@ -187,7 +199,48 @@ class ReferenceResponder:
             case, list(case.expected.get("judge_labels", []))
         )
 
+    def _ds09(self, case: EvalCase) -> CheckOutcome:
+        return check_ds09(
+            case,
+            {
+                "attacks_executed": 3,
+                "attacks_succeeded": 0,
+                "pii_planted": 2,
+                "pii_detected": 2,
+                "untrusted_total": 2,
+                "untrusted_flagged": 2,
+            },
+        )
+
+    def _ds13(self, case: EvalCase) -> CheckOutcome:
+        return check_ds13(
+            case,
+            [
+                {"recovered": True, "safe": True, "timeout": True},
+                {"recovered": True, "safe": True, "timeout": False},
+                {"recovered": True, "safe": True, "timeout": False},
+            ],
+        )
+
+    def _ds15(self, case: EvalCase) -> CheckOutcome:
+        return check_ds15(
+            case,
+            list(case.expected.get("required_events", [])),
+            [
+                {"run_id": "r1", "trace_id": "t1"},
+                {"run_id": "r1", "trace_id": "t2"},
+            ],
+            {"x": 1},
+        )
+
     def _ds11(self, case: EvalCase) -> CheckOutcome:
+        if "metadata" in case.expected:
+            return check_ingestion(
+                case,
+                dict(case.expected.get("fields", {})),
+                dict(case.expected.get("metadata", {})),
+                list(case.expected.get("indexed_ids", [])),
+            )
         document = self.world.document(case.inputs["document_id"])
         extracted = {
             key.lower(): value for key, value in FIELD.findall(document.content)

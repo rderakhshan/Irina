@@ -27,6 +27,7 @@ from .core import (
     check_ds12,
     check_fairness,
 )
+from .extended import check_ds09, check_ds13, check_ds15, check_ingestion
 
 __all__ = [
     "CheckOutcome",
@@ -39,9 +40,13 @@ __all__ = [
     "check_ds04",
     "check_ds05",
     "check_ds06",
+    "check_ds09",
     "check_ds11",
     "check_ds12",
+    "check_ds13",
+    "check_ds15",
     "check_fairness",
+    "check_ingestion",
     "check_memory_lifecycle",
     "check_memory_retrieval",
     "claim_citation_coverage",
