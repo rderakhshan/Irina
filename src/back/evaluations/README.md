@@ -26,6 +26,7 @@ or human review, and records evidence with explicit evidence levels.
 9. [Metric type system and mathematics](#9-metric-type-system-and-mathematics)
 10. [Metric catalog](#10-metric-catalog)
 10.1 [Run and test](#101-run-and-test)
+10.2 [Composite indices and dashboards](#102-composite-indices-and-dashboards)
 11. [Datasets DS01-DS16](#11-datasets-ds01-ds16)
 12. [Independent oracles](#12-independent-oracles)
 13. [Finance controls and time-valid RAG](#13-finance-controls-and-time-valid-rag)
@@ -557,6 +558,7 @@ uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core
 uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --opik
 uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --l2
 uv run python -m src.back.evaluations.run_suites --seed 7
+uv run python -m src.back.evaluations.run_dashboards
 
 $env:IRINA_MEMORY_ENABLED="0"
 uv run python -m unittest tests.test_eval_metrics tests.test_eval_world `
@@ -571,6 +573,55 @@ mirroring without failing the local report.
 
 CI: `.github/workflows/evaluation.yml` runs the offline tests and core suite and
 uploads `reports/core` as an artifact.
+
+---
+
+## 10.2 Composite indices and dashboards
+
+Composite indices combine defined atomic metrics with configurable weights. They
+are **per-pillar indices, not a single governance score**.
+
+| Composite | Components |
+|---|---|
+| `llm.answer_quality_index` | task completion, abstention, inverted unsupported-claim rate |
+| `llm.grounding_index` | citation coverage, claim support, inverted contradiction rate |
+| `llm.safety_index` | inverted injection success |
+| `memory.retrieval_index` | P@k, R@k, MRR, NDCG |
+| `memory.lifecycle_index` | write accuracy, preservation recall, inverted compaction ratio |
+| `tools.execution_index` | selection, parameters, trajectory, schema |
+| `tools.authorization_index` | approval compliance, zero unauthorized effects, inverted injection |
+| `environment.ingestion_index` | extraction, metadata, index coverage |
+| `environment.temporal_index` | snapshot accuracy, zero lookahead violations |
+| `environment.resilience_index` | fault recovery, safe degradation, inverted timeout rate |
+| `environment.audit_index` | event completeness, trace correlation, evidence integrity |
+| `calibration.judge_health` | judge precision, recall, inverted FNR |
+
+Rules:
+
+- composite is `undefined` when weighted coverage is below the configured
+  minimum;
+- every result exposes coverage, missing components, and gate status;
+- a critical gate is a separate verdict and cannot be hidden by a high index;
+- weights are provisional until an owner approves them.
+
+### Code-defined dashboard (no Ollie)
+
+```powershell
+uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --opik --dashboard
+uv run python -m src.back.evaluations.run_dashboards
+uv run python -m src.back.evaluations.run_dashboards --recreate
+```
+
+The dashboard `Irina Governance` uses only supported widgets:
+
+- `text_markdown` for scope, limits, and gate policy;
+- `experiments_feedback_scores` radar/bar charts for LLM, Memory, Tools,
+  Environment, and Calibration composites;
+- `experiment_leaderboard` ranked by a selected composite.
+
+No `ollie_chart` widget is used. A summary dataset item (`run-summary`) carries
+the composite feedback scores so they appear in experiment charts; per-case
+traces keep the underlying metrics for drill-down.
 
 ---
 
@@ -792,6 +843,7 @@ gates and are never averaged away. No single governance score is published.
 - Opik experiments + per-item feedback scores (verified locally).
 - CLI lifecycle trace and provider retry-attempt spans (DeepSeek).
 - Opik Test Suites (15 suites created and visible locally).
+- Composite indices + code-defined `Irina Governance` dashboard (no Ollie).
 
 ### Partial
 

@@ -1,4 +1,4 @@
-"""Metric dictionary, typed values, and deterministic calculators."""
+"""Metric dictionary, typed values, deterministic calculators, composites."""
 
 from .calculators import (
     accuracy,
@@ -22,6 +22,13 @@ from .calculators import (
     sha256_hex,
     token_reduction,
 )
+from .composites import (
+    Component,
+    CompositeDefinition,
+    CompositeResult,
+    compute_composites,
+    load_composites,
+)
 from .metric_value import MetricValue, UndefinedReason, undefined
 from .registry import (
     MetricDefinition,
@@ -31,6 +38,9 @@ from .registry import (
 )
 
 __all__ = [
+    "Component",
+    "CompositeDefinition",
+    "CompositeResult",
     "MetricDefinition",
     "MetricDictionaryError",
     "MetricValue",
@@ -38,9 +48,11 @@ __all__ = [
     "accuracy",
     "canonical_bytes",
     "compaction_ratio",
+    "compute_composites",
     "f1",
     "false_negative_rate",
     "hash_matches",
+    "load_composites",
     "load_dictionary",
     "mean_reciprocal_rank",
     "ndcg_at_k",

@@ -15,9 +15,38 @@ from pathlib import Path
 from .contracts import IntegrationLevel
 from .datasets import build_core_datasets, flatten_datasets
 from .governance import write_coverage
-from .reporting import write_report
+from .metrics import MetricValue, UndefinedReason, compute_composites
+from .reporting import summarise_metrics, write_report
 from .runners import run_core_suite
 from .worlds import WorldFactory
+
+
+def _suite_metrics(outcomes):
+    values: dict[str, MetricValue] = {}
+    for summary in summarise_metrics(outcomes):
+        if summary.defined:
+            values[summary.metric_id] = MetricValue(
+                metric_id=summary.metric_id,
+                value=summary.value,
+                value_type="float64",
+                numerator=summary.numerator,
+                denominator=summary.denominator,
+                sample_size=summary.samples,
+            )
+        else:
+            reason = UndefinedReason.MISSING_TELEMETRY
+            if summary.undefined_reasons:
+                try:
+                    reason = UndefinedReason(summary.undefined_reasons[0])
+                except ValueError:
+                    pass
+            values[summary.metric_id] = MetricValue(
+                metric_id=summary.metric_id,
+                value=None,
+                value_type="float64",
+                undefined_reason=reason,
+            )
+    return values
 
 
 def _run_l2(cases):
@@ -47,6 +76,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", default="reports/core")
     parser.add_argument("--opik", action="store_true", help="mirror results to local Opik")
     parser.add_argument(
+        "--dashboard",
+        action="store_true",
+        help="create/update the predefined Opik governance dashboard",
+    )
+    parser.add_argument(
         "--l2",
         action="store_true",
         help="run DS01 through the real Harness with a scripted model",
@@ -62,8 +96,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         result = run_core_suite(world, cases)
 
+    composites = compute_composites(_suite_metrics(result.outcomes))
+
     json_path, md_path = write_report(
-        result, world_manifest=world.manifest, output_dir=args.out
+        result,
+        world_manifest=world.manifest,
+        output_dir=args.out,
+        composites=composites,
     )
     coverage_path = write_coverage(args.out)
 
@@ -84,7 +123,18 @@ def main(argv: list[str] | None = None) -> int:
             print(f"[opik] {status.detail}; skipping mirror", file=sys.stderr)
         else:
             dataset_name = f"irina-core-{result.dataset_version}-s{args.seed}"
-            ensure_dataset(dataset_name, [case.as_dict() for case in cases])
+            summary_item = {
+                "case_id": "run-summary",
+                "family_id": "SUMMARY",
+                "inputs": {"seed": args.seed, "suite": "core"},
+                "expected": {"composites": [item.id for item in composites]},
+                "expected_behavior": "suite_summary",
+                "severity": "high",
+            }
+            ensure_dataset(
+                dataset_name,
+                [case.as_dict() for case in cases] + [summary_item],
+            )
             item_ids = dataset_items(dataset_name)
             experiment = create_experiment(
                 name=(
@@ -125,6 +175,31 @@ def main(argv: list[str] | None = None) -> int:
                     item_id = item_ids.get(outcome.case_id)
                     if item_id:
                         references.append((item_id, trace_id))
+            summary_trace = log_trace(
+                "eval:run-summary",
+                input={"seed": args.seed, "suite": "core"},
+                output={
+                    "composites": [item.as_dict() for item in composites],
+                },
+                metadata={
+                    "integration_level": result.integration_level,
+                    "gates": {
+                        item.id: item.gate_triggered for item in composites
+                    },
+                },
+            )
+            if summary_trace:
+                log_feedback_scores(
+                    summary_trace,
+                    [
+                        {"name": item.id, "value": float(item.value)}
+                        for item in composites
+                        if item.value is not None
+                    ],
+                )
+                summary_item_id = item_ids.get("run-summary")
+                if summary_item_id:
+                    references.append((summary_item_id, summary_trace))
             linked = link_experiment_items(experiment, references)
             if experiment is None:
                 print("[opik] experiment creation blocked", file=sys.stderr)
@@ -135,6 +210,17 @@ def main(argv: list[str] | None = None) -> int:
                     file=sys.stderr,
                 )
             flush()
+            if args.dashboard:
+                from .opik_adapter.dashboards import ensure_dashboard
+
+                dashboard = ensure_dashboard()
+                if dashboard is None:
+                    print("[opik] dashboard creation blocked", file=sys.stderr)
+                else:
+                    print(
+                        f"[opik] dashboard={getattr(dashboard, 'id', '')}",
+                        file=sys.stderr,
+                    )
 
     print(
         json.dumps(

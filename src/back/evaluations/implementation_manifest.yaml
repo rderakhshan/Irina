@@ -87,6 +87,14 @@ checkpoints:
       - src/back/evaluations/benchmarks
       - src/back/evaluations/calibration
     tests: "python -m unittest tests.test_eval_extended"
+  C3k_composites_dashboard:
+    status: verified
+    artifacts:
+      - src/back/evaluations/configs/composite_metrics.yaml
+      - src/back/evaluations/metrics/composites.py
+      - src/back/evaluations/opik_adapter/dashboards.py
+      - src/back/evaluations/run_dashboards.py
+    evidence: "Irina Governance dashboard created with 7 sections, no Ollie"
 
 blocked:
   - id: human_calibration

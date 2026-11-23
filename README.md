@@ -750,8 +750,10 @@ uv run python -m src.back.evaluations.run_core --seed 7 --out reports/core --opi
 
 It writes JSON/Markdown reports and a 12-concern coverage matrix. `--opik`
 mirrors evaluation traces to Opik and writes experiments with per-item
-feedback scores. `run_suites.py` creates versioned Opik Test Suites from the
-same datasets. The local report remains the portable copy. See
+feedback scores. `--dashboard` creates the code-defined `Irina Governance`
+dashboard with composite indices (no Ollie widgets). `run_suites.py` creates
+versioned Opik Test Suites from the same datasets. The local report remains the
+portable copy. See
 [src/back/evaluations/README.md](src/back/evaluations/README.md)
 for metrics, datasets, evidence levels, and limitations.
 

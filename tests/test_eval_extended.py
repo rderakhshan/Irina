@@ -78,3 +78,17 @@ class InjectionTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DashboardConfigTests(unittest.TestCase):
+    def test_dashboard_uses_supported_widgets_without_ollie(self) -> None:
+        from src.back.evaluations.opik_adapter.dashboards import build_sections
+
+        sections = build_sections()
+        widgets = [widget for section in sections for widget in section["widgets"]]
+        types = {widget["type"] for widget in widgets}
+        self.assertIn("experiments_feedback_scores", types)
+        self.assertIn("experiment_leaderboard", types)
+        self.assertIn("text_markdown", types)
+        self.assertNotIn("ollie_chart", types)
+        self.assertTrue(all(widget["config"] for widget in widgets))

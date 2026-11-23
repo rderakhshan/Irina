@@ -76,7 +76,12 @@ def summarise_metrics(outcomes: list[Any]) -> list[MetricSummary]:
     return summaries
 
 
-def build_report(result: SuiteResult, *, world_manifest: dict[str, Any]) -> dict[str, Any]:
+def build_report(
+    result: SuiteResult,
+    *,
+    world_manifest: dict[str, Any],
+    composites: list[Any] | None = None,
+) -> dict[str, Any]:
     summaries = summarise_metrics(result.outcomes)
     cases = []
     for outcome in result.outcomes:
@@ -102,6 +107,7 @@ def build_report(result: SuiteResult, *, world_manifest: dict[str, Any]) -> dict
             "undefined": result.undefined,
         },
         "metrics": [asdict(summary) for summary in summaries],
+        "composites": [item.as_dict() for item in (composites or [])],
         "cases": cases,
         "limitations": [
             "Synthetic fixtures are fictional.",
@@ -132,6 +138,24 @@ def to_markdown(report: dict[str, Any]) -> str:
             f"| `{metric['metric_id']}` | {value} | {metric['samples']} | "
             f"{metric['denominator'] or '-'} | {undefined} |"
         )
+    lines.extend(["", "## Composite indices", ""])
+    composites = report.get("composites", [])
+    if composites:
+        lines.extend(
+            ["| Composite | Value | Coverage | Gate |", "|---|---|---|---|"]
+        )
+        for item in composites:
+            gate = "triggered" if item.get("gate_triggered") else "ok"
+            value = (
+                item.get("value")
+                if item.get("value") is not None
+                else "undefined"
+            )
+            lines.append(
+                f"| `{item['id']}` | {value} | {item.get('coverage', 0):.2f} | {gate} |"
+            )
+    else:
+        lines.append("None.")
     lines.extend(["", "## Failures", ""])
     failures = [case for case in report.get("cases", []) if case["passed"] is False]
     if not failures:
@@ -150,10 +174,13 @@ def write_report(
     *,
     world_manifest: dict[str, Any],
     output_dir: str | Path,
+    composites: list[Any] | None = None,
 ) -> tuple[Path, Path]:
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=True)
-    report = build_report(result, world_manifest=world_manifest)
+    report = build_report(
+        result, world_manifest=world_manifest, composites=composites
+    )
     json_path = directory / "evaluation_report.json"
     md_path = directory / "evaluation_report.md"
     json_path.write_text(

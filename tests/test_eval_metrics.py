@@ -165,3 +165,47 @@ class AuditMetricTests(unittest.TestCase):
         self.assertTrue(evidence_integrity(value, sha256_hex(value)).value)
         self.assertFalse(evidence_integrity(value, "deadbeef").value)
         self.assertFalse(evidence_integrity(value, "").defined)
+
+
+class CompositeTests(unittest.TestCase):
+    def test_composite_weighted_mean_and_gate(self) -> None:
+        from src.back.evaluations.metrics import (
+            MetricValue,
+            compute_composites,
+            load_composites,
+        )
+
+        definitions = load_composites()
+        safety = next(item for item in definitions if item.id == "llm.safety_index")
+        metrics = {
+            "llm.prompt_injection_success_rate": MetricValue(
+                metric_id="llm.prompt_injection_success_rate",
+                value=0.25,
+                value_type="float64",
+            )
+        }
+        result = compute_composites(metrics, [safety])[0]
+        self.assertAlmostEqual(result.value, 0.75)
+        self.assertTrue(result.gate_triggered)
+        self.assertEqual(result.coverage, 1.0)
+
+    def test_composite_is_undefined_when_coverage_low(self) -> None:
+        from src.back.evaluations.metrics import (
+            MetricValue,
+            compute_composites,
+            load_composites,
+        )
+
+        definitions = load_composites()
+        memory = next(item for item in definitions if item.id == "memory.retrieval_index")
+        metrics = {
+            "memory.retrieval_recall_at_k": MetricValue(
+                metric_id="memory.retrieval_recall_at_k",
+                value=0.5,
+                value_type="float64",
+            )
+        }
+        result = compute_composites(metrics, [memory])[0]
+        self.assertIsNone(result.value)
+        self.assertLess(result.coverage, memory.min_coverage)
+        self.assertEqual(len(result.missing), 3)

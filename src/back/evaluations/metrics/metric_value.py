@@ -18,6 +18,7 @@ class UndefinedReason(StrEnum):
     NOT_APPLICABLE = "not_applicable"
     UNVERIFIED_JUDGE = "unverified_judge"
     UNSUPPORTED_API = "unsupported_api"
+    INSUFFICIENT_COVERAGE = "insufficient_coverage"
 
 
 @dataclass(frozen=True, slots=True)
